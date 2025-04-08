@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+    <title>Login</title>
+</head>
+<body>
+<div class="container" id="container">
+	<div class="form-container sign-in-container">
+                {% if messages %}
+                {% for message in messages %}
+                    <a style="color: red; margin: 15px 0;">{{ message }}</a>
+                {% endfor %}
+            {% endif %}
+		<form action="#" method="post">
+
+
+            {% csrf_token %}
+			<h1>Inicio de Sesión</h1>
+			<input type="text" name="username" placeholder="Usuario" required />
+			<input  type="password" name="password" placeholder="Contraseña" required />
+			<a href="#">Olvidaste la contraseña? </a>
+			<button type="submit">Sign In</button>
+
+		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Welcome Back!</h1>
+				<p>To keep connected with us please login with your personal info</p>
+				<button class="ghost" id="signIn">Sign In</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Bienvenido!</h1>
+				<p>Si deseas crear una cuenta, contacta al administrador</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer>
+	<p> Soter 2025 - Santiago Reyes
+	</p>
+</footer>
+</body>
+</html> 
+
