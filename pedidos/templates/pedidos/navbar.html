@@ -1,6 +1,6 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icons=menu,contact_support,admin_panel_settings,settings,monitoring,home" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icons=menu,contact_support,admin_panel_settings,settings,monitoring,home,person,logout" />
 
 
 <nav id="navbar">
@@ -13,7 +13,7 @@
         </a>
       </li>
       <li class="navbar-item flexbox-left">
-        <a class="navbar-item-inner flexbox-left">
+        <a class="navbar-item-inner flexbox-left" href="{% url 'home' %}" >
           <div class="navbar-item-inner-icon-wrapper flexbox">
             <span class="material-symbols-outlined">
               home
@@ -56,13 +56,29 @@
         <a class="navbar-item-inner flexbox-left">
           <div class="navbar-item-inner-icon-wrapper flexbox">
             <span class="material-symbols-outlined">
-              settings
+              person
               </span>
           </div>
-          <span class="link-text">Configuración</span>
+          {% if user.is_authenticated %}
+          <span class="link-text">{{user.username}}</span>
+          {% else %}
+          <span class="link-text">Sin Usuario</span>
+          {% endif %}
         </a>
       </li>
+
+      <li class="navbar-item flexbox-left">
+        {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" class="logout-form" style="display: contents;">
+            {% csrf_token %}
+            <button type="submit" class="navbar-item-inner-logout flexbox-left">
+                <div class="navbar-item-inner-icon-wrapper flexbox">
+                    <span class="material-symbols-outlined">logout</span>
+                </div>
+                <span class="link-text">Cerrar Sesión</span>  
+            </button>
+        </form>
+        {% endif %}
+    </li>
     </ul>
   </nav>
-  
- 

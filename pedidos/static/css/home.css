@@ -6,11 +6,23 @@ body {
     font-family: Arial, sans-serif;
 }
 
+
+.welcome-message {
+    font-family: 'Montserrat', sans-serif; /* Fuente profesional */
+    font-weight: 700; /* Negrita */
+    font-size: 2.5rem; /* Tamaño grande (ajustable) */
+    color: #000000; /* Color oscuro profesional */
+    text-align: center; /* Centrado */
+    letter-spacing: -0.5px; /* Espaciado entre letras sutil */
+    margin: 1rem 0; /* Margen superior e inferior */
+    line-height: 1.2; /* Altura de línea para mejor lectura */
+    text-transform: uppercase; /* Opcional: mayúsculas */
+  }
 /* Navbar vertical (20%) */
 /* Contenido principal (80%) */
 .main-content {
     width: 100%;
-    padding: 5% 5% 5% 20%;
+    padding: 5% 5% 5% 15%;
     background: #f8f9fa;
 }
 
@@ -24,8 +36,8 @@ body {
 
 /* Tarjetas responsivas */
 .card {
-    width: 220px;
-    height: 220px;
+    width: 200px;
+    height: 200px;
     border-radius: 15px;
     transition: all 0.3s ease;
     border: none;
@@ -60,4 +72,16 @@ body {
 .card-text {
     font-size: 0.9rem;
     color: #7f8c8d;
+}
+
+
+.filter-input {
+    width: 100%;
+    margin-bottom: 5px;
+}
+.pagination {
+    margin-top: 20px;
+}
+.table-responsive {
+    overflow-x: auto;
 }

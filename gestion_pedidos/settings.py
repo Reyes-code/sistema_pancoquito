@@ -49,6 +49,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+LOGIN_URL = '/login/'  # URL a la que @login_required redirige
+LOGOUT_REDIRECT_URL = '/login/'  # Opcional: redirige después del logout
+
 
 ROOT_URLCONF = 'gestion_pedidos.urls'
 
