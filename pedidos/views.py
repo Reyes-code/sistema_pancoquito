@@ -39,7 +39,7 @@ def logout_view(request):
 def home(request):
     return render(request, 'pedidos/home.html')
 
-@never_cache
+""" 
 @login_required
 def lista_clientes(request):
     # Filtrado
@@ -66,36 +66,55 @@ def lista_clientes(request):
     })
     response['Cache-Control'] = 'no-store, must-revalidate'
     return response
-
-
-@never_cache
+ """
 @login_required
 def lista_clientes(request):
-    # Filtrados
-    query = request.GET.get('q', '')
+    # Obtener parámetros de filtrado del request
+    filtros = {
+        'cliente_id': request.GET.get('cliente_id', ''),
+        'nombre': request.GET.get('nombre', ''),
+        'email': request.GET.get('email', ''),
+        'telefono': request.GET.get('telefono', ''),
+        'cedula': request.GET.get('cedula', ''),
+    }
+
+    # Consulta inicial
     clientes = Cliente.objects.all().order_by('cliente_id')
-    
-    if query:
-        clientes = clientes.filter(
-            Q(cliente_id__icontains=query) |
-            Q(nombre__icontains=query) |
-            Q(email__icontains=query) |
-            Q(telefono__icontains=query)|
-            Q(cedula__icontains=query)
-        )
-    
+
+    # Aplicar filtros si existen
+    if any(filtros.values()):
+        queries = []
+        if filtros['cliente_id']:
+            queries.append(Q(cliente_id__icontains=filtros['cliente_id']))
+        if filtros['nombre']:
+            queries.append(Q(nombre__icontains=filtros['nombre']))
+        if filtros['email']:
+            queries.append(Q(email__icontains=filtros['email']))
+        if filtros['telefono']:
+            queries.append(Q(telefono__icontains=filtros['telefono']))
+        if filtros['cedula']:
+            queries.append(Q(cedula__icontains=filtros['cedula']))
+
+        # Combinar filtros con OR (opcionalmente puede ser AND)
+        query = queries.pop()
+        for q in queries:
+            query |= q
+        clientes = clientes.filter(query)
+
     # Paginación
     paginator = Paginator(clientes, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    response = render(request, 'pedidos/lista_clientes.html', {
-        'query': query,
-        'page_obj' : page_obj
-    })
-    response['Cache-Control'] = 'no-store, must-revalidate'
-    print(response)
-    return response
+
+    context = {
+        'page_obj': page_obj,
+        'filtros': filtros,  # Para mantener los valores en los inputs
+    }
+    return render(request, 'pedidos/lista_clientes.html', context)
+
+
+
+
 
 def editar_cliente(request, cliente_id):
     cliente = get_object_or_404(Cliente, pk=cliente_id)

@@ -23,49 +23,51 @@
         <div> 
             <h3>Clientes Registrados</h3>
         </div>
-        <table class="table table-striped" border="1">
-        <div class="container d-flex justify-content-center align-items-center gap-4">
-    
-
-            
-            <input type="text" class="form-control form-control-sm filter-input" 
-            placeholder="Nombre" data-column="1">
-            <input type="text" class="form-control form-control-sm filter-input" 
-            placeholder="Email" data-column="2">
-            <input type="text" class="form-control form-control-sm filter-input" 
-            placeholder="Teléfono" data-column="3">
-            <input type="text" class="form-control form-control-sm filter-input" 
-            placeholder="Cedula" data-column="4">
+        <table class="table table-striped" border="1" id="tablaClientes">
+        <div class=" d-flex justify-content-center align-items-center gap-4">
+            <form method="get" class="mb-4 p-3 bg-light rounded">
+                <div class="row">
+                    <div class="col">
+                        <input type="text" class="form-control" name="cliente_id" 
+                               placeholder="ID" value="{{ filtros.cliente_id }}">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="nombre" 
+                               placeholder="Nombre" value="{{ filtros.nombre }}">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="email" 
+                               placeholder="Email" value="{{ filtros.email }}">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="telefono" 
+                               placeholder="Teléfono" value="{{ filtros.telefono }}">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="cedula" 
+                               placeholder="Cédula" value="{{ filtros.cedula }}">
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
 
         </div>
-            <thead>
-                <tr>
-                    
-                    <th>
-                        <input type="text" class="form-control form-control-sm filter-input" 
-                        placeholder="ID" data-column="0">
-                    </th>
-                    <th>
-                        
-                        <input type="text" class="form-control form-control-sm filter-input" 
-                        placeholder="Nombre" data-column="1">
-                    </th>
-                      
-                    <th>
-                       Email
-                    </th>
-                    
-                    <th>
-                        Telefono
-                    </th>
-                    <th>
-                        Cedula
-                    </th>
-                    {% if user|has_group:"Empleado" %}
-                    <th>Acciones</th>
-                    {% endif %}
-                </tr>
-            </thead>
+        <thead>
+            <tr>
+                <th>ID </th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Cédula</th>
+                {% if user|has_group:"Empleado" %}
+                <th>Acciones</th>
+                {% endif %}
+            </tr>
+        </thead>
             <tbody>
                 {% for cliente in page_obj %}
                 <tr>
