@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear Orden</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        
+        <h2>Datos del Cliente</h2>
+        {{ form.cliente_id }}
+        
+        <h2>Productos</h2>
+        {{ form.productos }}
+        
+        <h2>Cantidad</h2>
+        {{ form.cantidad }}
+        
+        <h2>Envío</h2>
+        <label>Tipo de envío:</label>
+        {{ form.tipo_envio }}
+        <button type="submit">Crear Orden</button>
+    </form>
+</body>
+</html>

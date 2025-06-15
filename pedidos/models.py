@@ -21,24 +21,28 @@ class Cliente(models.Model):
 
 
 class Orden(models.Model):
-    orden_id = models.AutoField(db_column='Orden_ID', primary_key=True)  # Field name made lowercase.
+    orden_id = models.AutoField(db_column='Orden_ID', primary_key=True)  # Field name made lowercase. The composite primary key (Orden_ID, producto_id) found, that is not supported. The first column is selected.
     fecha_orden = models.DateTimeField(db_column='Fecha_Orden')  # Field name made lowercase.
     envio = models.ForeignKey('Envio', models.DO_NOTHING, db_column='Envio_ID', blank=True, null=True)  # Field name made lowercase.
     cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='Cliente_ID', blank=True, null=True)  # Field name made lowercase.
+    precio = models.DecimalField(max_digits=10, decimal_places=0)
+    producto = models.ForeignKey('Productos', models.DO_NOTHING)
+    cantidad = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'orden'
+        unique_together = (('orden_id', 'producto'),)
 
 
-class Productos(models.Model):
-    producto_id = models.AutoField(db_column='Producto_ID', primary_key=True)  # Field name made lowercase.
-    producto_nombre = models.CharField(db_column='Producto_nombre', max_length=100)  # Field name made lowercase.
-    categoria = models.ForeignKey('Categoria', models.DO_NOTHING, db_column='Categoria_ID', blank=True, null=True)  # Field name made lowercase.
+class Envio(models.Model):
+    envio_id = models.AutoField(db_column='Envio_ID', primary_key=True)  # Field name made lowercase.
+    tipo = models.CharField(db_column='Tipo', max_length=50)  # Field name made lowercase.
+    estado = models.CharField(db_column='Estado', max_length=50)  # Field name made lowercase.
 
     class Meta:
         managed = False
-        db_table = 'productos'
+        db_table = 'envio'
 
 
 class Categoria(models.Model):
@@ -51,11 +55,25 @@ class Categoria(models.Model):
         db_table = 'categoria'
 
 
-class Envio(models.Model):
-    envio_id = models.AutoField(db_column='Envio_ID', primary_key=True)  # Field name made lowercase.
-    tipo = models.CharField(db_column='Tipo', max_length=50)  # Field name made lowercase.
-    estado = models.CharField(db_column='Estado', max_length=50)  # Field name made lowercase.
+class Productos(models.Model):
+    producto_id = models.AutoField(db_column='Producto_ID', primary_key=True)  # Field name made lowercase.
+    producto_nombre = models.CharField(db_column='Producto_nombre', max_length=100)  # Field name made lowercase.
+    categoria = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='Categoria_ID', blank=True, null=True)  # Field name made lowercase.
+    precio = models.DecimalField(max_digits=10, decimal_places=0)
 
     class Meta:
         managed = False
-        db_table = 'envio'
+        db_table = 'productos'
+
+
+class ItemOrden(models.Model):
+    item_id = models.AutoField(db_column='Item_ID', primary_key=True)  # Field name made lowercase.
+    orden = models.ForeignKey(Orden, models.DO_NOTHING, db_column='Orden_ID')  # Field name made lowercase.
+    producto = models.ForeignKey(Productos, models.DO_NOTHING, db_column='Producto_ID')  # Field name made lowercase.
+    precio_historico = models.DecimalField(db_column='Precio_Historico', max_digits=10, decimal_places=0)  # Field name made lowercase.
+    cantidad = models.IntegerField(db_column='Cantidad')  # Field name made lowercase.
+    subtotal = models.DecimalField(db_column='Subtotal', max_digits=10, decimal_places=0)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'item_orden'
