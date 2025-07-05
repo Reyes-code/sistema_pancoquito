@@ -26,7 +26,7 @@ class Orden(models.Model):
     envio = models.ForeignKey('Envio', models.DO_NOTHING, db_column='Envio_ID', blank=True, null=True)  # Field name made lowercase.
     cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='Cliente_ID', blank=True, null=True)  # Field name made lowercase.
     precio = models.DecimalField(max_digits=10, decimal_places=0)
-    producto = models.ForeignKey('Productos', models.DO_NOTHING)
+    producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column = 'Producto_Id' )
     cantidad = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -65,15 +65,3 @@ class Productos(models.Model):
         managed = False
         db_table = 'productos'
 
-
-class ItemOrden(models.Model):
-    item_id = models.AutoField(db_column='Item_ID', primary_key=True)  # Field name made lowercase.
-    orden = models.ForeignKey(Orden, models.DO_NOTHING, db_column='Orden_ID')  # Field name made lowercase.
-    producto = models.ForeignKey(Productos, models.DO_NOTHING, db_column='Producto_ID')  # Field name made lowercase.
-    precio_historico = models.DecimalField(db_column='Precio_Historico', max_digits=10, decimal_places=0)  # Field name made lowercase.
-    cantidad = models.IntegerField(db_column='Cantidad')  # Field name made lowercase.
-    subtotal = models.DecimalField(db_column='Subtotal', max_digits=10, decimal_places=0)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'item_orden'

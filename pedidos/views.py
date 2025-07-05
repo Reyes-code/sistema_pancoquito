@@ -224,37 +224,33 @@ def lista_pedidos(request):
     # Obtener parámetros de filtrado del request
     filtros = {
         'orden_id': request.GET.get('orden_id', ''),
-        'fecha': request.GET.get('fecha', ''),
-        'email': request.GET.get('email', ''),
-        'telefono': request.GET.get('telefono', ''),
-        'cedula': request.GET.get('cedula', ''),
+        'fecha': request.GET.get('fecha_orden', ''),
+        'envio_id': request.GET.get('envio_id', ''),
+        'producto_id': request.GET.get('producto_id', ''),
     }
 
     # Consulta inicial
-    clientes = Cliente.objects.all().order_by('cliente_id')
+    pedidos = Orden.objects.all().order_by('cliente_id')
 
     # Aplicar filtros si existen
     if any(filtros.values()):
         queries = []
-        if filtros['cliente_id']:
-            queries.append(Q(cliente_id__icontains=filtros['cliente_id']))
-        if filtros['nombre']:
-            queries.append(Q(nombre__icontains=filtros['nombre']))
-        if filtros['email']:
-            queries.append(Q(email__icontains=filtros['email']))
-        if filtros['telefono']:
-            queries.append(Q(telefono__icontains=filtros['telefono']))
-        if filtros['cedula']:
-            queries.append(Q(cedula__icontains=filtros['cedula']))
-
-        # Combinar filtros con OR (opcionalmente puede ser AND)
+        if filtros['orden_id']:
+            queries.append(Q(orden_id__icontains=filtros['orden_id']))
+        if filtros['fecha']:
+            queries.append(Q(nombre__icontains=filtros['fecha_orden']))
+        if filtros['envio_id']:
+            queries.append(Q(email__icontains=filtros['envio_id']))
+        if filtros['producto_id']:
+            queries.append(Q(email__icontains=filtros['producto_id']))
+                # Combinar filtros con OR (opcionalmente puede ser AND)
         query = queries.pop()
         for q in queries:
             query |= q
-        clientes = clientes.filter(query)
+        pedidos = pedidos.filter(query)
 
     # Paginación
-    paginator = Paginator(clientes, 20)
+    paginator = Paginator(pedidos, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -262,4 +258,8 @@ def lista_pedidos(request):
         'page_obj': page_obj,
         'filtros': filtros,  # Para mantener los valores en los inputs
     }
-    return render(request, 'pedidos/lista_clientes.html', context)
+    return render(request, 'pedidos/lista_pedidos.html', context)
+
+
+
+

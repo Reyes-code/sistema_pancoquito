@@ -21,7 +21,7 @@
     {% include 'pedidos/navbar.html' %}
     <div class="main-content">
         <div> 
-            <h3>Clientes Registrados</h3>
+            <h3>Pedidos Registrados</h3>
         </div>
         <div class="container-fluid p-0">
     <form method="get" class="mb-4 p-3 bg-light rounded">
@@ -40,14 +40,6 @@
                        placeholder="Email" value="{{ filtros.email }}">
             </div>
             <div class="col-md-2">
-                <input type="text" class="form-control filter-input" name="telefono" 
-                       placeholder="Teléfono" value="{{ filtros.telefono }}">
-            </div>
-            <div class="col-md-2">
-                <input type="text" class="form-control filter-input" name="cedula" 
-                       placeholder="Cédula" value="{{ filtros.cedula }}">
-            </div>
-            <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="fas fa-search"></i> Buscar
                 </button>
@@ -55,15 +47,13 @@
         </div>
     </form>
 </div>
-        <table class="table table-striped" border="1" id="tablaClientes">
+        <table class="table table-striped" border="1" id="tablaPedidos">
         </div>
         <thead>
             <tr>
                 <th>ID </th>
                 <th>Nombre</th>
                 <th>Email</th>
-                <th>Teléfono</th>
-                <th>Cédula</th>
                 {% if user|has_group:"Empleado" %}
                 <th>Acciones</th>
                 {% endif %}
@@ -72,21 +62,20 @@
             </tr>
         </thead>
             <tbody>
-                {% for cliente in page_obj %}
+                {% for pedido in page_obj %}
                 <tr>
-                    <td>{{ cliente.cliente_id }}</td>
-                    <td>{{ cliente.nombre }}</td>
-                    <td>{{ cliente.email }}</td>
-                    <td>{{ cliente.telefono }}</td>
-                    <td>{{ cliente.cedula }}</td>
+                    <td>{{ pedido.orden_id }}</td>
+                    <td>{{ pedido.fecha_orden }}</td>
+                    <td>{{ pedido.envio.tipo }}</td>
+                    <td>{{ pedido.producto.Producto_nombre }}</td>
                     {% if user|has_group:"Empleado" %}
                     <td>
-                        <a href="{% url 'editar_cliente' cliente.cliente_id %}"><i class="far fa-edit" style="color: #006da3;"></i></a>
-                        
+                       
+                        <a>Hola</a>
                     </td>
                     {% endif %}
                     <td>
-                        <a href="{% url 'exportar_cliente_pdf' cliente.cliente_id %}" class="btn btn-sm btn-danger">
+                       
                             <i class="fas fa-file-pdf"></i> PDF
                         </a>
                     </td>
