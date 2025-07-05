@@ -28,8 +28,8 @@
         <!-- Fila para pantallas grandes (md y arriba) -->
         <div class="row d-none d-md-flex">
             <div class="col-md-2">
-                <input type="text" class="form-control filter-input" name="cliente_id" 
-                       placeholder="ID" value="{{ filtros.cliente_id }}">
+                <input type="text" class="form-control filter-input" name="orden_id" 
+                       placeholder="ID" value="{{ filtros.orden_id}}">
             </div>
             <div class="col-md-2">
                 <input type="text" class="form-control filter-input" name="nombre" 
@@ -51,9 +51,10 @@
         </div>
         <thead>
             <tr>
-                <th>ID </th>
-                <th>Nombre</th>
-                <th>Email</th>
+                <th>Orden Id </th>
+                <th>Fecha</th>
+                <th>Tipo de Envio</th>
+                <th>Producto</th>
                 {% if user|has_group:"Empleado" %}
                 <th>Acciones</th>
                 {% endif %}
@@ -67,7 +68,7 @@
                     <td>{{ pedido.orden_id }}</td>
                     <td>{{ pedido.fecha_orden }}</td>
                     <td>{{ pedido.envio.tipo }}</td>
-                    <td>{{ pedido.producto.Producto_nombre }}</td>
+                    <td>{{ pedido.producto.producto_nombre }}</td>
                     {% if user|has_group:"Empleado" %}
                     <td>
                        
