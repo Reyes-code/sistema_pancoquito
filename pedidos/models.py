@@ -1,67 +1,84 @@
-﻿# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
-from django.db import models
+﻿from django.db import models
 
 
 class Cliente(models.Model):
-    cliente_id = models.AutoField(db_column='Cliente_ID', primary_key=True)  # Field name made lowercase.
-    nombre = models.CharField(db_column='Nombre', max_length=100)  # Field name made lowercase.
-    email = models.CharField(db_column='Email', unique=True, max_length=100)  # Field name made lowercase.
-    telefono = models.CharField(db_column='Telefono', max_length=255, blank=True, null=True)  # Field name made lowercase.
-    cedula = models.IntegerField(db_column='Cedula', blank=True, null=True)  # Field name made lowercase.
+    cliente_id = models.AutoField(db_column='Cliente_ID', primary_key=True)
+    nombre = models.CharField(db_column='Nombre', max_length=100)
+    email = models.CharField(db_column='Email', unique=True, max_length=100)
+    telefono = models.CharField(db_column='Telefono', max_length=255, blank=True, null=True)
+    cedula = models.IntegerField(db_column='Cedula', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'cliente'
 
 
-class Orden(models.Model):
-    orden_id = models.AutoField(db_column='Orden_ID', primary_key=True)  # Field name made lowercase. The composite primary key (Orden_ID, producto_id) found, that is not supported. The first column is selected.
-    fecha_orden = models.DateTimeField(db_column='Fecha_Orden')  # Field name made lowercase.
-    envio = models.ForeignKey('Envio', models.DO_NOTHING, db_column='Envio_ID', blank=True, null=True)  # Field name made lowercase.
-    cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='Cliente_ID', blank=True, null=True)  # Field name made lowercase.
-    precio = models.DecimalField(max_digits=10, decimal_places=0)
-    producto = models.ForeignKey('Productos', models.DO_NOTHING, db_column = 'Producto_Id' )
-    cantidad = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'orden'
-        unique_together = (('orden_id', 'producto'),)
-
-
 class Envio(models.Model):
-    envio_id = models.AutoField(db_column='Envio_ID', primary_key=True)  # Field name made lowercase.
-    tipo = models.CharField(db_column='Tipo', max_length=50)  # Field name made lowercase.
-    estado = models.CharField(db_column='Estado', max_length=50)  # Field name made lowercase.
+    envio_id = models.AutoField(db_column='Envio_ID', primary_key=True)
+    tipo = models.CharField(db_column='Tipo', max_length=50)
+    estado = models.CharField(db_column='Estado', max_length=50)
 
     class Meta:
-        managed = False
         db_table = 'envio'
 
 
 class Categoria(models.Model):
-    categoria_id = models.AutoField(db_column='Categoria_ID', primary_key=True)  # Field name made lowercase.
-    categoria_nombre = models.CharField(db_column='Categoria_nombre', max_length=100)  # Field name made lowercase.
-    categoria_tipo = models.CharField(db_column='Categoria_Tipo', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    categoria_id = models.AutoField(db_column='Categoria_ID', primary_key=True)
+    categoria_nombre = models.CharField(db_column='Categoria_nombre', max_length=100)
+    categoria_tipo = models.CharField(db_column='Categoria_Tipo', max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'categoria'
 
 
 class Productos(models.Model):
-    producto_id = models.AutoField(db_column='Producto_ID', primary_key=True)  # Field name made lowercase.
-    producto_nombre = models.CharField(db_column='Producto_nombre', max_length=100)  # Field name made lowercase.
-    categoria = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='Categoria_ID', blank=True, null=True)  # Field name made lowercase.
-    precio = models.DecimalField(max_digits=10, decimal_places=0)
+    producto_id = models.AutoField(db_column='Producto_ID', primary_key=True)
+    producto_nombre = models.CharField(db_column='Producto_nombre', max_length=100)
+    categoria = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='Categoria_ID', blank=True, null=True)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    activo = models.BooleanField(default=True)
 
     class Meta:
-        managed = False
         db_table = 'productos'
 
+
+class Orden(models.Model):
+    orden_id = models.AutoField(db_column='Orden_ID', primary_key=True)
+    fecha_orden = models.DateTimeField(db_column='Fecha_Orden')
+    envio = models.ForeignKey(Envio, models.DO_NOTHING, db_column='Envio_ID', blank=True, null=True)
+    cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='Cliente_ID', blank=True, null=True)
+
+    # Relación muchos-a-muchos con tabla intermedia
+    productos = models.ManyToManyField(Productos, through='OrdenDetalle', related_name='ordenes')
+
+    class Meta:
+        db_table = 'orden'
+
+    @property
+    def total(self):
+        from django.db.models import F, Sum, DecimalField
+        return self.detalles.aggregate(
+            total=Sum(F('cantidad') * F('precio_unitario'), output_field=DecimalField())
+        )['total'] or 0
+
+
+class OrdenDetalle(models.Model):
+    orden = models.ForeignKey(Orden, on_delete=models.CASCADE, db_column='Orden_ID', related_name='detalles')
+    producto = models.ForeignKey(Productos, on_delete=models.PROTECT, db_column='Producto_ID', related_name='detalles')
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'orden_detalle'
+        unique_together = (('orden', 'producto'),)
+
+class Inventario(models.Model):
+    producto = models.OneToOneField(Productos, on_delete=models.CASCADE, db_column='Producto_ID', primary_key=True, related_name='inventario')
+    cantidad_disponible = models.PositiveIntegerField(db_column='Cantidad_Disponible', default=0)
+    cantidad_minima = models.PositiveIntegerField(db_column='Cantidad_Minima', default=10)
+    ultima_actualizacion = models.DateTimeField(db_column='Ultima_Actualizacion', auto_now=True)
+
+    class Meta:
+        db_table = 'inventario'
+
+    def __str__(self):
+        return f"Inventario de {self.producto.producto_nombre}: {self.cantidad_disponible} unidades"

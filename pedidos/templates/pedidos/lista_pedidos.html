@@ -51,10 +51,10 @@
         </div>
         <thead>
             <tr>
-                <th>Orden Id </th>
-                <th>Fecha</th>
-                <th>Tipo de Envio</th>
-                <th>Producto</th>
+                <th class="text-center align-middle">Orden Id </th>
+                <th class = "text-center align-middle">Fecha</th>
+                <th class = "text-center align-middle">Tipo de Envio</th>
+                <th class = "text-center align-middle">Producto</th>
                 {% if user|has_group:"Empleado" %}
                 <th>Acciones</th>
                 {% endif %}
@@ -63,30 +63,34 @@
             </tr>
         </thead>
             <tbody>
-                {% for pedido in page_obj %}
-                <tr>
-                    <td>{{ pedido.orden_id }}</td>
-                    <td>{{ pedido.fecha_orden }}</td>
-                    <td>{{ pedido.envio.tipo }}</td>
-                    <td>{{ pedido.producto.producto_nombre }}</td>
-                    {% if user|has_group:"Empleado" %}
-                    <td>
-                       
-                        <a>Hola</a>
-                    </td>
-                    {% endif %}
-                    <td>
-                       
-                            <i class="fas fa-file-pdf"></i> PDF
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">No se encontraron clientes</td>
-                </tr>
+    {% for pedido in page_obj %}
+    <tr>
+        <td class="text-center align-middle">{{ pedido.orden_id }}</td>
+        <td class="text-center align-middle">{{ pedido.fecha_orden|date:"d/m/Y H:i" }}</td>
+        <td class="text-center align-middle">{{ pedido.envio.tipo }}</td>
+        <td class="text-left align-middle">
+            <ul class="list-unstyled">
+                {% for detalle in pedido.detalles.all %}
+                <li>
+                    {{ detalle.producto.producto_nombre }} 
+                    (x{{ detalle.cantidad }}) - 
+                    ${{ detalle.precio_unitario|stringformat:".0f"|slice:":-3" }}.{{ detalle.precio_unitario|stringformat:".0f"|slice:"-3:" }}
+                </li>
                 {% endfor %}
-            </tbody>
+            </ul>
+        </td>
+        <td>${{ pedido.total|floatformat:2 }}</td>
+        {% if user|has_group:"Empleado" %}
+        <td>
+        </td>
+        {% endif %}
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">No se encontraron pedidos</td>
+    </tr>
+    {% endfor %}
+</tbody>
         </table>
         <span class="step-links">
             {% if page_obj.has_previous %}
