@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-op33r&hz2e)*osaf5ggbye*dcxlovx6jpr8io+r1o=x_)(^mkm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.80.25','127.0.0.1']
 
 
 # Application definition
@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'gestion_pedidos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'soter_pedidos' ,
+        'NAME': 'pancoquito' ,
         'USER': 'soter_admin',
         'PASSWORD': 'admin123',
         'HOST': 'localhost',

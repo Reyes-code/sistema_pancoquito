@@ -26,8 +26,8 @@ if not clientes_ids or not envios_ids or not productos_disponibles:
     exit()
 
 # 2. Generar fechas aleatorias (últimos 2 años)
-hoy = datetime.now()
-fechas_orden = [hoy - timedelta(days=random.randint(1, 730)) for _ in range(100)]
+    hoy = datetime.now()
+    fechas_orden = [hoy - timedelta(days=random.randint(1, 730)) for _ in range(100)]
 
 # 3. Insertar órdenes y detalles
 for i in range(100):

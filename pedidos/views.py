@@ -31,7 +31,7 @@ def login_view(request):
         else:
             messages.error(request, 'Usuario o contraseña incorrectos')
     
-    return render(request, 'pedidos/login.html')
+    return render(request, 'pedidos/login copy.html')
 
 @require_POST
 def logout_view(request):
