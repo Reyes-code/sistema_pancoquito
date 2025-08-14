@@ -1,0 +1,2 @@
+[phases.setup]
+nixPkgs = ["python3", "mysql.dev", "gcc", "zlib.dev", "libffi.dev"]  # Dependencias para compilar MySQL
