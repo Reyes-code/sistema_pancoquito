@@ -31,7 +31,7 @@ def login_view(request):
         else:
             messages.error(request, 'Usuario o contraseña incorrectos')
     
-    return render(request, 'pedidos/login copy.html')
+    return render(request, 'pedidos/login.html')
 
 @require_POST
 def logout_view(request):
@@ -44,36 +44,8 @@ def logout_view(request):
 @never_cache  # Evita que el navegador cachee la respuesta
 @login_required
 def home(request):
-    return render(request, 'pedidos/home.html')
+    return render(request, 'pedidos/index.html')
 
-""" 
-@login_required
-def lista_clientes(request):
-    # Filtrado
-    query = request.GET.get('q', '')
-    clientes = Cliente.objects.all().order_by('cliente_id')
-    
-    if query:
-        clientes = clientes.filter(
-            Q(cliente_id__icontains=query) |
-            Q(nombre__icontains=query) |
-            Q(email__icontains=query) |
-            Q(telefono__icontains=query)|
-            Q(cedula__icontains=query)
-        )
-    
-    # Paginación
-    paginator = Paginator(clientes, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    response = render(request, 'pedidos/lista_clientes.html', {
-        'query': query,
-        'page_obj' : page_obj
-    })
-    response['Cache-Control'] = 'no-store, must-revalidate'
-    return response
- """
 @login_required
 def lista_clientes(request):
     # Obtener parámetros de filtrado del request
@@ -136,7 +108,7 @@ def editar_cliente(request, cliente_id):
 
 
 
-######### Ordenes
+
 
 
 
@@ -219,7 +191,7 @@ class CrearOrdenView(View):
         
         return render(request, 'pedidos/crear_orden.html', {'form': form})
     
-@login_required
+""" @login_required
 def lista_pedidos(request):
     # Obtener parámetros de filtrado del request
     filtros = {
@@ -251,6 +223,48 @@ def lista_pedidos(request):
 
     # Paginación
     paginator = Paginator(pedidos, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'filtros': filtros,  # Para mantener los valores en los inputs
+    }
+    return render(request, 'pedidos/lista_pedidos.html', context) """
+
+
+
+
+@login_required
+def lista_categorias(request):
+    # Obtener parámetros de filtrado del request
+    filtros = {
+        'categoria_id': request.GET.get('categoria_id', ''),
+        'categoria_nombre': request.GET.get('categoria_nombre', ''),
+        'categoria_tipo': request.GET.get('categoria_tipo', ''),
+    }
+
+    # Consulta inicial
+    categorias = categorias.objects.all().order_by('categoria_id')
+
+    # Aplicar filtros si existen
+    if any(filtros.values()):
+        queries = []
+        if filtros['categoria_id']:
+            queries.append(Q(orden_id__icontains=filtros['categoria_id']))
+        if filtros['categoria_nombre']:
+            queries.append(Q(nombre__icontains=filtros['categoria_nombre']))
+        if filtros['categoria_tipo']:
+            queries.append(Q(email__icontains=filtros['categoria_tipo']))
+
+                # Combinar filtros con OR (opcionalmente puede ser AND)
+        query = queries.pop()
+        for q in queries:
+            query |= q
+        pedidos = categorias.filter(query)
+
+    # Paginación
+    paginator = Paginator(categorias, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

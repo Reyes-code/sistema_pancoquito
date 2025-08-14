@@ -1,52 +1,96 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
-    <title>Login</title>
+    <title>Pedidos Panaderia El Coquito</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    
+    <link rel="stylesheet" href="{% static 'css/sb-admin-2.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/bread.ico' %}">
 </head>
-<body>
-<div class="container" id="container">
-	<div class="form-container sign-in-container">
 
-		<form action="#" method="post">
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image">
+                                <img src="../../static/img//White-bread-cdd3875.jpg" alt="Girl in a jacket" width="100%" height="100%">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">El Coquito</h1>
+                                         <h5>Bienvenido a tu sistema de gestión Panaderia El Coquito</h1>
+                                    </div>
+
+                                    <hr>
+                                    
+                                    <form class="user" method="post">
+
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-user"
+                                                name="username" aria-describedby="emailHelp"
+                                                placeholder="Ingrese su usuario">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user"
+                                                name="password" placeholder="Contraseña">
+                                        </div>
+                                        	{% if messages %}
+			                                {% for message in messages %}
+				                            <a style="color: red; margin: 15px 0;">{{ message }}</a>
+			                                {% endfor %}
+			                                {% endif %}
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">Entrar</button>
+                                        <hr>                            
+                                    </form>
+                                    
+                                    
+                                    <hr>
+                                    <div class="text-center">
+                                        <a class="small" href="forgot-password.html"> ¿Olvidaste Tu Contraseña? Contacta al Admin</a>
+                                    </div>
+                                    <div class="text-center">
+                                        <a class="small" href="register.html">Quiero ser Cliente</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 
-            {% csrf_token %}
-			<h1>Inicio de Sesión</h1>
-			<input type="text" name="username" placeholder="Usuario" required />
-			<input  type="password" name="password" placeholder="Contraseña" required />
-			{% if messages %}
-			{% for message in messages %}
-				<a style="color: red; margin: 15px 0;">{{ message }}</a>
-			{% endfor %}
-			{% endif %}
-			<a href="#">Olvidaste la contraseña? </a>
-			<button type="submit">Entrar</button>
 
-		</form>
-	</div>
-	<div class="overlay-container">
-		<div class="overlay">
-			<div class="overlay-panel overlay-left">
-				<h1>Welcome Back!</h1>
-				<p>To keep connected with us please login with your personal info</p>
-				<button class="ghost" id="signIn">Sign In</button>
-			</div>
-			<div class="overlay-panel overlay-right">
-				<h1>Bienvenido!</h1>
-				<p>Si deseas crear una cuenta, contacta al administrador</p>
-			</div>
-		</div>
-	</div>
-</div>
-
-<footer>
-	<p> Soter 2025 - Santiago Reyes
-	</p>
-</footer>
 </body>
-</html> 
 
+</html>

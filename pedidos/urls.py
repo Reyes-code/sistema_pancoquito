@@ -8,7 +8,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),  # Usa tu vista personalizada
     path('clientes/', views.lista_clientes, name='lista_clientes'),
-    path('pedidos/', views.lista_pedidos, name='lista_pedidos'),
+    path('pedidos/', views.lista_categorias, name='lista_pedidos'),
     path('home/', views.home, name='home'),
     path('', RedirectView.as_view(url='/login/', permanent=True)),
     path('editar-cliente/<int:cliente_id>/', views.editar_cliente, name='editar_cliente'),
