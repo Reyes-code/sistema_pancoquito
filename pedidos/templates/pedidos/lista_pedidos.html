@@ -65,7 +65,7 @@
             <tbody>
     {% for pedido in page_obj %}
     <tr>
-        <td class="text-center align-middle">{{ pedido.orden_id }}</td>
+        <td class="text-center align-middle">{{ categorias.categoria_id }}</td>
         <td class="text-center align-middle">{{ pedido.fecha_orden|date:"d/m/Y H:i" }}</td>
         <td class="text-center align-middle">{{ pedido.envio.tipo }}</td>
         <td class="text-left align-middle">
