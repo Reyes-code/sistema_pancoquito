@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'gestion_pedidos.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-""" DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('railway'),
@@ -90,11 +90,11 @@ WSGI_APPLICATION = 'gestion_pedidos.wsgi.application'
             'ssl': {'ca': '/etc/ssl/certs/ca-certificates.crt'},
         }
     }
-} """
+} 
 
 
 
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pancoquito' ,
@@ -104,7 +104,7 @@ DATABASES = {
         'PORT': '3306'
     }
 }
-
+ """
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -145,3 +145,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 

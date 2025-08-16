@@ -1,5 +1,2 @@
 [phases.setup]
 nixPkgs = ["python3", "mysql.dev", "gcc", "zlib.dev", "libffi.dev"]
-
-[phases.start]
-cmd = "gunicorn gestion_pedidos.wsgi:application --bind 0.0.0.0:$PORT"
