@@ -24,9 +24,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-op33r&hz2e)*osaf5ggbye*dcxlovx6jpr8io+r1o=x_)(^mkm'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['sistemapancoquito-production.up.railway.app']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://sistemapancoquito-production.up.railway.app',
+    # Agrega otros dominios si es necesario
+]
+
+# 2. Configura el encabezado Host permitido
+ALLOWED_HOSTS = [
+    'sistemapancoquito-production.up.railway.app',
+    # Agrega otros hosts si es necesario
+]
+
+# 3. Para manejo seguro de cookies (opcional pero recomendado)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -43,12 +57,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+      # ¡Añade esto aquí!
 ]
 LOGIN_URL = '/login/'  # URL a la que @login_required redirige
 LOGOUT_REDIRECT_URL = '/login/'  # Opcional: redirige después del logout
@@ -140,11 +156,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
+
+
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Añade esta línea
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Añade esta línea
+# WhiteNoise para servir estáticos en producción
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
