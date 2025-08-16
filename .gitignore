@@ -1,14 +1,13 @@
-# Entorno virtual
+# Entornos virtuales
 venv/
 .venv/
 env/
-venv
 
-# Archivos de Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Caché de Python (todas las profundidades)
+**/__pycache__/
+**/*.py[cod]
+**/*.pyd
+**/*.pyo
 
 # Django
 *.sqlite3
