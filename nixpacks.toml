@@ -1,2 +1,2 @@
 [phases.setup]
-nixPkgs = ["python3", "mysql.dev", "gcc", "zlib.dev", "libffi.dev"]
+nixPkgs = ["python311", "mysql80.dev", "gcc", "zlib.dev", "libffi.dev"]
