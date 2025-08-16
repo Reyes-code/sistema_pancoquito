@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'gestion_pedidos.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': os.getenv('railway'),
         'USER': os.getenv('root'),
         'PASSWORD': os.getenv('DWGrzsNIOhCBBWNAJWZZBBPozHmunnig'),
@@ -91,20 +91,20 @@ DATABASES = {
         }
     }
 } 
-
+ 
 
 
 """ DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': 'pancoquito' ,
         'USER': 'soter_admin',
         'PASSWORD': 'admin123',
         'HOST': 'localhost',
         'PORT': '3306'
     }
-}
- """
+} """
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
