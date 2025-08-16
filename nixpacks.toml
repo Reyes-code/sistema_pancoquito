@@ -1,2 +1,8 @@
 [phases.setup]
-nixPkgs = ["python311", "mysql80", "gcc", "zlib", "libffi"]  # ¡SIN .dev!
+nixPkgs = ["python311", "gcc", "zlib", "libffi"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+[phases.start]
+cmd = "python manage.py migrate && gunicorn gestion_pedidos.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120"
