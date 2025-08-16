@@ -87,7 +87,8 @@ DATABASES = {
         'HOST': os.getenv('mysql.railway.internal'),
         'PORT': os.getenv('3306'),
         'OPTIONS': {
-            'ssl': {'ca': '/etc/ssl/certs/ca-certificates.crt'},
+           'ssl_ca': '/etc/ssl/certs/ca-certificates.crt',  # ¡Cambiado!
+            'use_pure': True,  # Necesario para SSL
         }
     }
 } 
