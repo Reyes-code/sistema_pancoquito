@@ -28,7 +28,7 @@ DEBUG = False
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://sistemapancoquito-production.up.railway.app',
+    'https://sistemapancoquito-production.up.railway.app/login/',
     'https://*.up.railway.app'  # Patrón comodín para todos los subdominios
 ]
 
