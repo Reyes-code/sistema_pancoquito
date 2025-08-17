@@ -29,8 +29,10 @@ DEBUG = False
 
 CSRF_TRUSTED_ORIGINS = [
     'https://sistemapancoquito-production.up.railway.app',
-    # Agrega otros dominios si es necesario
+    'https://*.up.railway.app'  # Patrón comodín para todos los subdominios
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # 2. Configura el encabezado Host permitido
 ALLOWED_HOSTS = [
@@ -167,7 +169,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Añade esta línea
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Añade esta línea
-# WhiteNoise para servir estáticos en producción
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'pedidos/static',  # Ruta exacta a tu carpeta static
+]
+
+# Configuración de WhiteNoise
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
