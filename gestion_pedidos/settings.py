@@ -39,7 +39,7 @@ if not SECRET_KEY:
 
  #'django-insecure-op33r&hz2e)*osaf5ggbye*dcxlovx6jpr8io+r1o=x_)(^mkm' 
 
-DEBUG = True # True en desarrollo, False en producción
+DEBUG = False # True en desarrollo, False en producción
 
 # Configuración para PythonAnywhere - REEMPLAZA 'tuusuario'
 PYTHONANYWHERE_USER = 'ReyesCode'
