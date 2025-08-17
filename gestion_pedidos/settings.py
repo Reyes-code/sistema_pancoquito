@@ -99,18 +99,17 @@ WSGI_APPLICATION = 'gestion_pedidos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': os.getenv('railway'),
-        'USER': os.getenv('root'),
-        'PASSWORD': os.getenv('DWGrzsNIOhCBBWNAJWZZBBPozHmunnig'),
-        'HOST': os.getenv('mysql.railway.internal'),
-        'PORT': os.getenv('3306'),
+        'NAME': os.getenv('MYSQLDATABASE'),
+        'USER': os.getenv('MYSQLUSER'),
+        'PASSWORD': os.getenv('MYSQLPASSWORD'),
+        'HOST': os.getenv('MYSQLHOST'),
+        'PORT': os.getenv('MYSQLPORT'),
         'OPTIONS': {
-           'ssl_ca': '/etc/ssl/certs/ca-certificates.crt',  # ¡Cambiado!
-            'use_pure': True,  # Necesario para SSL
+            'ssl_ca': '/etc/ssl/certs/ca-certificates.crt',
+            'use_pure': True,
         }
     }
-} 
- 
+}
 
 
 """ DATABASES = {
