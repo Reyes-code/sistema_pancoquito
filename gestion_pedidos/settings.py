@@ -10,14 +10,39 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-op33r&hz2e)*osaf5ggbye*dcxlovx6jpr8io+r1o=x_)(^mkm'
+# ---------------------------
+# Configuración de la base de datos
+# ---------------------------
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ReyesCode$pancoquito',  # <- usa el nombre con prefijo
+        'USER': 'ReyesCode',
+        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),  # ponla como env var en PA
+        'HOST': 'ReyesCode.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        },
+        'CONN_MAX_AGE': 60,
+    }
+}
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Cambiar a True temporalmente si necesitas depurar en PythonAnywhere
+# ---------------------------
+# Seguridad
+# ---------------------------
+# ⚠️ Usa variable de entorno en producción (ya no lo dejes hardcodeado)
+SECRET_KEY = os.getenv('SECRET_KEY')  
+if not SECRET_KEY:
+    raise ValueError("No SECRET_KEY set in environment variables!")
 
-# Configuración para PythonAnywhere - REEMPLAZA 'tunombre' CON TU USUARIO REAL
-PYTHONANYWHERE_USER = 'tunombre'
+ #'django-insecure-op33r&hz2e)*osaf5ggbye*dcxlovx6jpr8io+r1o=x_)(^mkm' 
+
+DEBUG = True # True en desarrollo, False en producción
+
+# Configuración para PythonAnywhere - REEMPLAZA 'tuusuario'
+PYTHONANYWHERE_USER = 'ReyesCode'
 PYTHONANYWHERE_DOMAIN = f'{PYTHONANYWHERE_USER}.pythonanywhere.com'
 
 CSRF_TRUSTED_ORIGINS = [
@@ -30,7 +55,9 @@ ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
 
-# Application definition
+# ---------------------------
+# Aplicaciones
+# ---------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -38,7 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pedidos'
+    'pedidos',
 ]
 
 MIDDLEWARE = [
@@ -74,15 +101,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gestion_pedidos.wsgi.application'
 
-# Database - SQLite para mayor simplicidad
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Password validation
+# ---------------------------
+# Validación de contraseñas
+# ---------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -90,35 +111,36 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
-LANGUAGE_CODE = 'es-es'  # Cambiado a español
-TIME_ZONE = 'America/Lima'  # Ajusta según tu zona horaria
+# ---------------------------
+# Internacionalización
+# ---------------------------
+LANGUAGE_CODE = 'es-es'
+TIME_ZONE = 'America/Bogota'  # Ajustado a Colombia
 USE_I18N = True
 USE_TZ = True
 
-# Static files (Simplificado para PythonAnywhere)
+# ---------------------------
+# Archivos estáticos
+# ---------------------------
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # IMPORTANTE para PythonAnywhere
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'pedidos', 'static'),
-]
 
-# Archivos media (si los necesitas)
+# Aquí se recopilan los archivos cuando corres collectstatic
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Solo si tienes carpetas globales de estáticos fuera de las apps:
+# STATICFILES_DIRS = [BASE_DIR / "assets"]
+
+# ---------------------------
+# Archivos media
+# ---------------------------
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
+# ---------------------------
+# Otros ajustes
+# ---------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Simplificamos la seguridad para PythonAnywhere
-SESSION_COOKIE_SECURE = False  # PythonAnywhere maneja esto automáticamente
+SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-SECURE_PROXY_SSL_HEADER = None  # No necesario en PythonAnywhere
-
-# Para evitar problemas con WhiteNoise en PythonAnywhere
-try:
-    import whitenoise
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-except ImportError:
-    pass
+SECURE_PROXY_SSL_HEADER = None
