@@ -1,0 +1,21 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+venv/
+.env
+.env.*
+*.env
+.env
+
+# Caché de Python (todas las profundidades)
+**/__pycache__/
+**/*.py[cod]
+**/*.pyd
+**/*.pyo
+
+# Django
+*.sqlite3
+*.log
+media/
+
