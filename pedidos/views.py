@@ -89,7 +89,7 @@ def lista_clientes(request):
         'page_obj': page_obj,
         'filtros': filtros,  # Para mantener los valores en los inputs
     }
-    return render(request, 'pedidos/lista_clientes.html', context)
+    return render(request, 'pedidos/tables.html', context)
 
 @login_required
 def editar_cliente(request, cliente_id):
