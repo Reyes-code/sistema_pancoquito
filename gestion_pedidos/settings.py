@@ -20,7 +20,7 @@ RENDER_HOST = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_HOST and RENDER_HOST not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append(RENDER_HOST)
 # Para evitar 400 en pruebas locales
-for h in ("localhost", "127.0.0.1"):
+for h in ("localhost", "127.0.0.1","192.168.80.41"):
     if h not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(h)
 # Render usa onrender.com

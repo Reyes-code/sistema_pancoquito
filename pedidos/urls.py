@@ -7,8 +7,9 @@ from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),  # Usa tu vista personalizada
-    path('home/clientes/', views.lista_clientes, name='lista_clientes'),
-    path('pedidos/', views.lista_categorias, name='lista_pedidos'),
+    path('home/clientes/', views.client_view, name='client_view'),
+    path('home/categorias/', views.categories_view, name='categories_view'),
+    path('home/productos/', views.products_view, name='products_view'),
     path('home/', views.home, name='home'),
     path('', RedirectView.as_view(url='/login/', permanent=True)),
     path('editar-cliente/<int:cliente_id>/', views.editar_cliente, name='editar_cliente'),

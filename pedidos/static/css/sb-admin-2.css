@@ -9899,12 +9899,12 @@ a:focus {
   animation-timing-function: opacity cubic-bezier(0, 1, 0.4, 1);
 }
 
-.bg-gradient-primary {
-background: #76b852;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #8DC26F, #76b852);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #8DC26F, #76b852); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
-  background-size: cover;
+.bg-gradient-primary {
+background: rgb(0,51,102);
+/* background-color: #995B21; */
+background: linear-gradient(159deg, rgba(0,51,102,1) 0%, rgba(15,82,186,1) 100%);
+background-size: cover;
 }
 
 .bg-gradient-secondary {

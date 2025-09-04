@@ -22,7 +22,7 @@ class Envio(models.Model):
 
 
 class Categoria(models.Model):
-    categoria_id = models.AutoField(db_column='Categoria_ID', primary_key=True)
+    categoria_id = models.PositiveIntegerField(primary_key=True)
     categoria_nombre = models.CharField(db_column='Categoria_nombre', max_length=100)
     categoria_tipo = models.CharField(db_column='Categoria_Tipo', max_length=100, blank=True, null=True)
 
@@ -31,9 +31,10 @@ class Categoria(models.Model):
 
 
 class Productos(models.Model):
-    producto_id = models.AutoField(db_column='Producto_ID', primary_key=True)
+    producto_id = models.PositiveIntegerField(db_column='Producto_ID', primary_key=True,null=False)
     producto_nombre = models.CharField(db_column='Producto_nombre', max_length=100)
     categoria = models.ForeignKey(Categoria, models.DO_NOTHING, db_column='Categoria_ID', blank=True, null=True)
+    unidad = models.CharField(max_length=100)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     activo = models.BooleanField(default=True)
 
