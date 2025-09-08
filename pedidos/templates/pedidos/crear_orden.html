@@ -1,25 +1,548 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Crear Orden</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/sb-admin-2.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/bread.ico' %}">
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css'%}" rel="stylesheet">
+
 </head>
-<body>
-    <form method="post">
-        {% csrf_token %}
-        
-        <h2>Datos del Cliente</h2>
-        {{ form.cliente_id }}
-        
-        <h2>Productos</h2>
-        {{ form.producto }}
-        
-        <h2>Cantidad</h2>
-        {{ form.cantidad }}
-        
-        <h2>Envío</h2>
-        <label>Tipo de envío:</label>
-        {{ form.tipo_envio }}
-        <button type="submit">Crear Orden</button>
-    </form>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-laugh-wink"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Interface
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Components</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Custom Components:</h6>
+                        <a class="collapse-item" href="buttons.html">Buttons</a>
+                        <a class="collapse-item" href="cards.html">Cards</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-fw fa-wrench"></i>
+                    <span>Utilities</span>
+                </a>
+                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
+                    data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Custom Utilities:</h6>
+                        <a class="collapse-item" href="utilities-color.html">Colors</a>
+                        <a class="collapse-item" href="utilities-border.html">Borders</a>
+                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
+                        <a class="collapse-item" href="utilities-other.html">Other</a>
+                    </div>
+                </div>
+            </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Addons
+            </div>
+
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Pages</span>
+                </a>
+                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Login Screens:</h6>
+                        <a class="collapse-item" href="login.html">Login</a>
+                        <a class="collapse-item" href="register.html">Register</a>
+                        <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
+                        <div class="collapse-divider"></div>
+                        <h6 class="collapse-header">Other Pages:</h6>
+                        <a class="collapse-item" href="404.html">404 Page</a>
+                        <a class="collapse-item" href="blank.html">Blank Page</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Nav Item - Charts -->
+            <li class="nav-item">
+                <a class="nav-link" href="charts.html">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Charts</span></a>
+            </li>
+
+            <!-- Nav Item - Tables -->
+            <li class="nav-item">
+                <a class="nav-link" href="client_view">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Tables</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                        <li class="nav-item dropdown no-arrow d-sm-none">
+                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-search fa-fw"></i>
+                            </a>
+                            <!-- Dropdown - Messages -->
+                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                                aria-labelledby="searchDropdown">
+                                <form class="form-inline mr-auto w-100 navbar-search">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control bg-light border-0 small"
+                                            placeholder="Search for..." aria-label="Search"
+                                            aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" type="button">
+                                                <i class="fas fa-search fa-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+
+
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            {% if user.is_authenticated %}
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{user.first_name}}
+                                    {{user.last_name}}</span>
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+
+                            </a>
+                            {% endif %}
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                {% if user.is_authenticated %}
+                                <form action="{% url 'logout' %}" method="post" style="display: contents;">
+                                    {% csrf_token %}
+                                    <button type="submit" style="background-color: transparent; border: none;">
+                                        <a class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Logout
+                                        </a>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+
+
+                    <div class="container-fluid">
+                        <h1 class="h3 mb-2 text-gray-800">Crear Nueva Orden</h1>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Información de la Orden</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="orden-form" method="post" novalidate>
+                                            {% csrf_token %}
+                                            <input type="hidden" name="productos_json" id="productos-json" value="[]">
+                                            <!-- Información del Cliente (ahora se usa el cliente asociado al usuario logueado) -->
+                                            <div class="row mb-4">
+                                                <div class="col-md-12">
+                                                    <h5 class="text-primary">Información del Cliente</h5>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Cliente: *</label>
+                                                        <input type="text" class="form-control"
+                                                            value="{{ user.username }}" readonly />
+                                                        <small class="form-text text-muted">Nombre del cliente
+                                                            (automáticamente asociado a su cuenta)</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Información de Entrega -->
+                                            <div class="row mb-4">
+                                                <div class="col-md-12">
+                                                    <h5 class="text-primary">Información de Entrega</h5>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="{{ form.fecha_entrega.id_for_label }}">Fecha de
+                                                            Entrega *</label>
+                                                        {{ form.fecha_entrega }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="{{ form.horario_entrega.id_for_label }}">Horario de
+                                                            Entrega *</label>
+                                                        {{ form.horario_entrega }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Productos -->
+                                            <div class="row mb-4">
+                                                <div class="col-12">
+                                                    <h5 class="text-primary">Productos de la Orden</h5>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered" id="productos-table">
+                                                            <thead class="thead-dark">
+                                                                <tr>
+                                                                    <th>Producto</th>
+                                                                    <th>Precio Unitario</th>
+                                                                    <th>Cantidad</th>
+                                                                    <th>Subtotal</th>
+                                                                    <th>Acción</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr class="producto-item">
+                                                                    <td>
+                                                                        <select class="form-control producto-select"
+                                                                            name="producto">
+                                                                            <option value="">Seleccione un producto...
+                                                                            </option>
+                                                                            {% for producto in productos %}
+                                                                            <option value="{{ producto.producto_id }}"
+                                                                                data-precio="{{ producto.precio }}">
+                                                                                {{ producto.producto_nombre }} -
+                                                                                ${{producto.precio }}
+                                                                            </option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </td>
+                                                                    <td><span class="precio-unitario">$0.00</span></td>
+                                                                    <td><input type="number"
+                                                                            class="form-control cantidad-input"
+                                                                            name="cantidad" min="1" value="1"
+                                                                            style="width: 80px;"></td>
+                                                                    <td><span class="subtotal">$0.00</span></td>
+                                                                    <td><button type="button"
+                                                                            class="btn btn-danger btn-sm remove-product"><i
+                                                                                class="fas fa-trash"></i></button></td>
+                                                                </tr>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="3" class="text-right">
+                                                                        <strong>Total:</strong>
+                                                                    </td>
+                                                                    <td colspan="2"><strong
+                                                                            id="total-orden">$0.00</strong></td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+
+                                                    <button type="button" id="add-product"
+                                                        class="btn btn-success btn-sm">
+                                                        <i class="fas fa-plus"></i> Agregar Producto
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Botones -->
+                                            <div class="row">
+                                                <div class="col-12 text-right">
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-check"></i> Confirmar Orden
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End of Page Wrapper -->
+
+                    <!-- Scroll to Top Button-->
+                    <a class="scroll-to-top rounded" href="#page-top">
+                        <i class="fas fa-angle-up"></i>
+                    </a>
+
+
+
+                    '
+
+                    <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+                    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+                    <!-- Core plu{% static 'gin JavaScript-->
+                    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+                    <!-- Custom s{% static 'cripts for all pages-->
+                    <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
+
+                    <!-- For tables-->
+
+                    <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js'%} "></script>
+                    <script src="{% static 'vendor/datatables/jquery.dataTables.min.js'%}"></script>
+                    <script src="{% static 'js/demo/datatables-demo.js'%}"></script>
 </body>
+
 </html>
+
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        // Template para nueva fila de producto
+        const productoTemplate = `
+        <tr class="producto-item">
+            <td>
+                <select class="form-control producto-select" name="producto">
+                    <option value="">Seleccione un producto...</option>
+                    {% for producto in productos %}
+                    <option value="{{ producto.producto_id }}" 
+                            data-precio="{{ producto.precio }}">
+                        {{ producto.producto_nombre }} - $ {{ producto.precio }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <span class="precio-unitario">$0.00</span>
+            </td>
+            <td>
+                <input type="number" class="form-control cantidad-input" 
+                       name="cantidad" min="1" value="1" style="width: 80px;">
+            </td>
+            <td>
+                <span class="subtotal">$0.00</span>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm remove-product">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+
+        // Agregar producto
+        $('#add-product').click(function () {
+            $('#productos-table tbody').append(productoTemplate);
+            updateTotal();
+        });
+
+        // Eliminar producto
+        $(document).on('click', '.remove-product', function () {
+            if ($('.producto-item').length > 1) {
+                $(this).closest('.producto-item').remove();
+                updateTotal();
+            } else {
+                // Resetear la primera fila en lugar de eliminarla
+                const firstRow = $('.producto-item').first();
+                firstRow.find('.producto-select').val('');
+                firstRow.find('.cantidad-input').val(1);
+                firstRow.find('.precio-unitario').text('$0.00');
+                firstRow.find('.subtotal').text('$0.00');
+                updateTotal();
+            }
+        });
+
+        // Calcular subtotal cuando cambia producto o cantidad
+        $(document).on('change', '.producto-select, input.cantidad-input', function () {
+            const row = $(this).closest('.producto-item');
+            const selectedOption = row.find('.producto-select option:selected');
+            const precio = parseFloat(selectedOption.data('precio') || 0);
+            const cantidad = parseInt(row.find('.cantidad-input').val() || 0);
+            const subtotal = precio * cantidad;
+
+            row.find('.precio-unitario').text('$' + precio.toFixed(2));
+            row.find('.subtotal').text('$' + subtotal.toFixed(2));
+            updateTotal();
+        });
+
+        // Actualizar total
+        function updateTotal() {
+            let total = 0;
+            $('.producto-item').each(function () {
+                const subtotalText = $(this).find('.subtotal').text();
+                const subtotal = parseFloat(subtotalText.replace('$', '')) || 0;
+                total += subtotal;
+            });
+
+            $('#total-orden').text('$' + total.toFixed(2));
+            updateProductosJson();
+        }
+
+        // Actualizar JSON hidden field
+        function updateProductosJson() {
+            const productosData = [];
+            $('.producto-item').each(function () {
+                const productoId = $(this).find('.producto-select').val();
+                const cantidad = $(this).find('.cantidad-input').val();
+                const precio = parseFloat($(this).find('.precio-unitario').text().replace('$', '') || 0);
+
+                if (productoId && cantidad && precio > 0) {
+                    productosData.push({
+                        producto_id: productoId,
+                        cantidad: parseInt(cantidad),
+                        precio_unitario: precio
+                    });
+                }
+            });
+
+            // Actualiza el campo hidden
+            $('#productos-json').val(JSON.stringify(productosData));
+        }
+
+        // Validación del formulario
+        $('#orden-form').on('submit', function (e) {
+            updateProductosJson();
+            let valid = true;
+            let errorMessage = '';
+
+            // Validar fecha de entrega
+            const fechaEntrega = $('#fecha-entrega').val();
+            if (!fechaEntrega) {
+                errorMessage += 'Debe seleccionar una fecha de entrega\n';
+                valid = false;
+            }
+
+            // Validar horario
+            const horario = $('#horario-entrega').val();
+            if (!horario) {
+                errorMessage += 'Debe seleccionar un horario de entrega\n';
+                valid = false;
+            }
+
+            // Validar que al menos un producto tenga cantidad
+            let hasValidProducts = false;
+            $('.producto-item').each(function () {
+                if ($(this).find('.producto-select').val() && $(this).find('.cantidad-input').val()) {
+                    hasValidProducts = true;
+                }
+            });
+
+            if (!hasValidProducts) {
+                errorMessage += 'Debe agregar al menos un producto válido\n';
+                valid = false;
+            }
+
+            if (!valid) {
+                e.preventDefault();
+                alert('Por favor corrija los siguientes errores:\n' + errorMessage);
+            }
+        });
+
+        // Inicializar
+        updateTotal();
+    });
+</script>
+
+{% endblock %}

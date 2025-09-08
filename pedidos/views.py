@@ -1,6 +1,7 @@
 from django.shortcuts import render
+from django.views import View
 from django.http import HttpResponse
-from .models import Cliente, Orden, Productos, Envio, Categoria
+from .models import Cliente, Pedido, Productos, Envio, Categoria, DetallePedido
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
@@ -11,13 +12,16 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Q
-from .forms import ClienteForm, OrdenForm
+from .forms import ClienteForm, PedidoForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from io import BytesIO
 from datetime import datetime
-from django.views import View
+from django.contrib.auth.models import User
+from json_response import JsonResponse, json
+from datetime import datetime
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -150,43 +154,6 @@ def exportar_cliente_pdf(request, cliente_id):
 
 
 
-class CrearOrdenView(View):
-    def get(self, request):
-        form = OrdenForm()
-        return render(request, 'pedidos/crear_orden.html', {'form': form})
-
-    def post(self, request):
-        form = OrdenForm(request.POST)
-        if form.is_valid():
-            # 1. Crear nuevo envío
-            envio = Envio.objects.create(
-                tipo=form.cleaned_data['tipo_envio'],
-                estado=form.cleaned_data['estado_envio']
-            )
-            
-            # 2. Obtener el próximo ID de orden
-            ultima_orden = Orden.objects.all().order_by('-orden_id').first()
-            nuevo_orden_id = ultima_orden.orden_id + 1 if ultima_orden else 1
-            
-            # 3. Crear registros de orden para cada producto
-            for producto in form.cleaned_data['productos']:
-                Orden.objects.create(
-                    orden_id=nuevo_orden_id,
-                    fecha_orden=datetime.now(),
-                    envio=envio,
-                    cliente_id=form.cleaned_data['cliente_id'],
-                    producto=producto,
-                    precio=producto.precio,
-                    cantidad=form.cleaned_data['cantidad']
-                )
-            
-            return redirect('lista_ordenes')
-
-        
-        return render(request, 'pedidos/crear_orden.html', {'form': form})
-
-
-
 @login_required
 def categories_view(request):
     # Obtener parámetros de filtrado del request
@@ -312,3 +279,101 @@ def products_view(request):
         'filtros': filtros,
     }
     return render(request, 'pedidos/products_view.html', context)
+
+
+
+@login_required
+def crear_orden(request):
+    productos = Productos.objects.filter(activo=True)
+    
+    if request.method == 'POST':
+        form = PedidoForm(request.POST)
+        
+        if form.is_valid():
+            try:
+                # Obtener o crear el cliente asociado al usuario logueado
+                cliente, created = Cliente.objects.get_or_create(user=request.user)
+                
+                # Crear el envío
+                envio = Envio.objects.create(
+                    estado='pendiente'
+                )
+                
+                # Crear la orden
+                orden = Pedido.objects.create(
+                    fecha_orden=datetime.now(),
+                    envio=envio,
+                    cliente=cliente,
+                    fecha_entrega=form.cleaned_data['fecha_entrega'],
+                    horario_entrega=form.cleaned_data['horario_entrega']
+                )
+                
+                # Procesar productos del detalle de orden - CORREGIDO
+                productos_data = json.loads(request.POST.get('productos_json', '[]'))
+                
+                for item in productos_data:
+                    producto = Productos.objects.get(producto_id=item['producto_id'])
+                    DetallePedido.objects.create(
+                        pedido=orden,  
+                        producto=producto,
+                        cantidad=item['cantidad'],
+                        precio_unitario=producto.precio
+                    )
+                
+                # Redirigir a la vista de detalle de orden
+                return redirect('detalle_orden', orden_id=orden.orden_id)
+            
+            except Exception as e:
+                print(f"Error al crear la orden: {str(e)}")
+                form.add_error(None, f'Error al crear la orden: {str(e)}')
+        else:
+            print("Formulario no válido")
+            print(form.errors)
+    
+    else:
+        form = PedidoForm()
+    
+    return render(request, 'pedidos/crear_orden.html', {
+        'form': form,
+        'productos': productos
+    })
+
+@login_required
+def detalle_orden(request, orden_id):
+    orden = Pedido.objects.get(orden_id=orden_id)
+    return render(request, 'pedidos/detalle_orden.html', {
+        'orden': orden
+    })
+
+def validar_cliente(request):
+    usuario = request.GET.get('usuario')
+    telefono = request.GET.get('telefono')
+    
+    try:
+        """ user = User.objects.get(username=usuario) """
+        cliente = Cliente.objects.get(nombre=usuario, telefono=telefono)
+        return JsonResponse({
+            'valid': True,
+            'cliente_id': cliente.cliente_id,
+            'nombre': f"{cliente.nombre}"
+        })
+    except User.DoesNotExist:
+        return JsonResponse({
+            'valid': False, 
+            'error': 'El usuario no existe'
+        })
+    except Cliente.DoesNotExist:
+        return JsonResponse({
+            'valid': False, 
+            'error': 'El teléfono no coincide con el usuario'
+        })
+
+def obtener_productos(request):
+    productos = Productos.objects.filter(activo=True).values(
+        'producto_id', 
+        'producto_nombre', 
+        'precio',
+        'unidad',
+        'activo'
+    )
+    return JsonResponse(list(productos), safe=False)

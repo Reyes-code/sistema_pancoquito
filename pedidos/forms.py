@@ -1,6 +1,10 @@
 from django import forms
-from .models import Cliente,Orden, Productos, Envio
 from django.forms import inlineformset_factory
+from django import forms
+from django.contrib.auth.models import User
+from .models import Pedido, DetallePedido, Cliente, Productos
+from django.core.exceptions import ValidationError
+import json
 
 
 
@@ -10,19 +14,30 @@ class ClienteForm(forms.ModelForm):
         fields = ['cliente_id','nombre','email','cedula']
 
 
-class EnvioForm(forms.ModelForm):
-    class Meta:
-        model = Envio
-        fields = ['tipo', 'estado']
-
-class OrdenForm(forms.Form):
-    cliente_id = forms.IntegerField(label='ID del Cliente')
-    productos = forms.ModelMultipleChoiceField(
-        queryset=Productos.objects.all(),
-        widget=forms.CheckboxSelectMultiple
-    )
-    cantidad = forms.IntegerField(min_value=1, initial=1)
     
-    # Campos para nuevo envío
-    tipo_envio = forms.CharField(max_length=50)
-    estado_envio = forms.CharField(max_length=50, initial='Pendiente')
+class PedidoForm(forms.Form):
+    fecha_entrega = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'id': 'fecha-entrega'
+        })
+    )
+    
+    horario_entrega = forms.ChoiceField(
+        choices=[('', 'Seleccione horario...')] + Pedido.HORARIO_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'id': 'horario-entrega'
+        })
+    )
+    
+    productos_json = forms.CharField(
+        widget=forms.HiddenInput(attrs={'id': 'productos-json'}),
+        required=False
+    )
+
+    # Eliminamos la validación manual de usuario
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
