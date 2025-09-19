@@ -56,9 +56,8 @@ class Pedido(models.Model):
     fecha_entrega = models.DateField()
     horario_entrega = models.CharField(max_length=10, choices=HORARIO_CHOICES)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    fecha_orden = models.DateTimeField(auto_now_add=True)  # este es el campo de fecha de creación
-    envio = models.ForeignKey(Envio, on_delete=models.CASCADE)  # este es el campo de la relación con Envio
-    
+    fecha_orden = models.DateTimeField(auto_now_add=True) 
+    envio = models.ForeignKey(Envio, on_delete=models.CASCADE)  
     def __str__(self):
         return f"Pedido #{self.id} - {self.cliente}"
 

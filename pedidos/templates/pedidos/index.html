@@ -25,124 +25,15 @@
 
 </head>
 
+
+
 <body id="page-top">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-                        
-            
-            {% if user.is_authenticated %}
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'home' %}">
-                <div class="sidebar-brand-icon">
-                    <i class="fas fa-fw fa-bread-slice"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">Pancoquito</div>
-            </a>
-            {% endif %}
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url 'home' %}">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Gestión
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-receipt"></i>
-                    <span>Ordenes</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Selecciona:</h6>
-                        <a class="collapse-item" href="{% url 'crear_orden' %}">Crear Orden</a>
-                        <a class="collapse-item" href="cards.html">Ver Orden</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-bread-slice"></i>
-                    <span>Productos</span>
-                </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Selecciona:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Ver Productos</a>
-                        {% if user.groups.all.0.name == "Admin" or user.is_superuser %}
-                        <a class="collapse-item" href="utilities-border.html">Activación de Productos</a>
-                        <a class="collapse-item" href="utilities-other.html">Imágenes</a>
-                        {% endif %}
-                        <a class="collapse-item" href="utilities-animation.html">Detalles</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Admin
-            </div>
-            
-            {% if user.is_superuser %}
-            <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>
-            {% endif %}
-
-            <!-- Nav Item - Tables -->
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'client_view' %}">
-                    <i class="fas fa-fw fa-people-arrows"></i>
-                    <span>Clientes</span>
-                </a>
-            </li>
-            {% endif %}
-
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'products_view' %}">
-                    <i class="fas fa-fw fa-warehouse"></i>
-                    <span>Productos</span>
-                </a>
-            </li>
-            {% endif %}
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
+         {% include './navbar.html' %}
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -384,7 +275,7 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Content Row -->
                     <div class="row">
 
@@ -570,16 +461,12 @@
     <!-- Bootstrap core JavaScript-->
     <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
-    {% static '
     <!-- Core plu{% static 'gin JavaScript-->
     <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
-    {% static '
     <!-- Custom s{% static 'cripts for all pages-->
     <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
-    {% static '
     <!-- Page lev{% static 'el plugins -->
     <script src="{% static 'vendor/chart.js/Chart.min.js'%}"></script>
-    {% static '
     <!-- Page lev{% static 'el custom scripts -->
     <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>
     <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>

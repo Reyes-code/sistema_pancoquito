@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
 from .models import Cliente, Pedido, Productos, Envio, Categoria, DetallePedido
+from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
@@ -11,14 +12,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache   
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count, Max
+from django.utils import timezone
 from .forms import ClienteForm, PedidoForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from io import BytesIO
-from datetime import datetime
-from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 from json_response import JsonResponse, json
 from datetime import datetime
 
@@ -52,7 +53,6 @@ def home(request):
 
 @login_required
 def client_view(request):
-    # Obtener parámetros de filtrado del request
     filtros = {
         'cliente_id': request.GET.get('cliente_id', ''),
         'nombre': request.GET.get('nombre', ''),
@@ -61,10 +61,8 @@ def client_view(request):
         'cedula': request.GET.get('cedula', ''),
     }
 
-    # Consulta inicial
     clientes = Cliente.objects.all().order_by('cliente_id')
 
-    # Aplicar filtros si existen
     if any(filtros.values()):
         queries = []
         if filtros['cliente_id']:
@@ -235,7 +233,6 @@ def categories_view(request):
 
 @login_required
 def products_view(request):
-    # Obtener parámetros de filtro (corregir nombres)
     filtros = {
         'producto_id': request.GET.get('Producto_ID', ''), 
         'producto_nombre': request.GET.get('Producto_nombre', ''),
@@ -245,10 +242,8 @@ def products_view(request):
         'unidad': request.GET.get('unidad', '')
     }
     
-    # Query inicial con select_related
     productos = Productos.objects.all().select_related('categoria').order_by('producto_id')
     
-    # Aplicar filtros
     if any(filtros.values()):
         query = Q()
         
@@ -269,7 +264,6 @@ def products_view(request):
         
         productos = productos.filter(query)
     
-    # Paginación
     paginator = Paginator(productos, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -291,15 +285,12 @@ def crear_orden(request):
         
         if form.is_valid():
             try:
-                # Obtener o crear el cliente asociado al usuario logueado
                 cliente, created = Cliente.objects.get_or_create(user=request.user)
                 
-                # Crear el envío
                 envio = Envio.objects.create(
                     estado='pendiente'
                 )
                 
-                # Crear la orden
                 orden = Pedido.objects.create(
                     fecha_orden=datetime.now(),
                     envio=envio,
@@ -308,7 +299,6 @@ def crear_orden(request):
                     horario_entrega=form.cleaned_data['horario_entrega']
                 )
                 
-                # Procesar productos del detalle de orden - CORREGIDO
                 productos_data = json.loads(request.POST.get('productos_json', '[]'))
                 
                 for item in productos_data:
@@ -320,7 +310,6 @@ def crear_orden(request):
                         precio_unitario=producto.precio
                     )
                 
-                # Redirigir a la vista de detalle de orden
                 return redirect('detalle_orden', orden_id=orden.orden_id)
             
             except Exception as e:
@@ -345,29 +334,6 @@ def detalle_orden(request, orden_id):
         'orden': orden
     })
 
-def validar_cliente(request):
-    usuario = request.GET.get('usuario')
-    telefono = request.GET.get('telefono')
-    
-    try:
-        """ user = User.objects.get(username=usuario) """
-        cliente = Cliente.objects.get(nombre=usuario, telefono=telefono)
-        return JsonResponse({
-            'valid': True,
-            'cliente_id': cliente.cliente_id,
-            'nombre': f"{cliente.nombre}"
-        })
-    except User.DoesNotExist:
-        return JsonResponse({
-            'valid': False, 
-            'error': 'El usuario no existe'
-        })
-    except Cliente.DoesNotExist:
-        return JsonResponse({
-            'valid': False, 
-            'error': 'El teléfono no coincide con el usuario'
-        })
-
 def obtener_productos(request):
     productos = Productos.objects.filter(activo=True).values(
         'producto_id', 
@@ -377,3 +343,43 @@ def obtener_productos(request):
         'activo'
     )
     return JsonResponse(list(productos), safe=False)
+
+def get_stats(request):
+    hoy = timezone.now().date()
+    fecha_reciente = Pedido.objects.aggregate(ultima_fecha=Max('fecha_orden'))['ultima_fecha']
+    ordenes_recientes = Pedido.objects.filter(
+        fecha_orden__date=fecha_reciente
+    ).count() if fecha_reciente else 0
+    # 2. Total mensual (mes actual)
+    inicio_mes = hoy.replace(day=1)
+    ordenes_mensual = Pedido.objects.filter(
+        fecha_orden__date__gte=inicio_mes
+    ).count()
+    # 3. Series diarias (últimos 30 días)
+    fecha_limite = hoy - timedelta(days=30)
+    ordenes_diarias = (Pedido.objects
+        .filter(fecha_orden__date__gte=fecha_limite)
+        .values('fecha_orden__date')
+        .annotate(total=Count('orden_id'))
+        .order_by('fecha_orden__date')
+    )
+    datos_diarios = [
+        {
+            'fecha': item['fecha_orden__date'].strftime("%Y-%m-%d"),
+            'total': item['total']
+        }
+        for item in ordenes_diarias
+    ]
+    return JsonResponse({
+        'ordenes_recientes': ordenes_recientes,
+        'ordenes_mensual': ordenes_mensual,
+        'series_diarias': datos_diarios
+    })
+
+
+@login_required
+def main_view_stats(request):
+    today = timezone.now()
+    return today
+
+
