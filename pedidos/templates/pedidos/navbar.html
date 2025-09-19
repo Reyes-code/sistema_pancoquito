@@ -1,84 +1,136 @@
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/navbar.css' %}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icons=menu,contact_support,admin_panel_settings,settings,monitoring,home,person,logout" />
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
 
 
-<nav id="navbar">
-    <ul class="navbar-items flexbox-col">
-      <li class="navbar-logo flexbox-left">
-        <a class="navbar-item-inner flexbox">
-          <span class="material-symbols-outlined">
-            menu
-            </span>
-        </a>
-      </li>
-      <li class="navbar-item flexbox-left">
-        <a class="navbar-item-inner flexbox-left" href="{% url 'home' %}" >
-          <div class="navbar-item-inner-icon-wrapper flexbox">
-            <span class="material-symbols-outlined">
-              home
-              </span>
-          </div>
-          <span class="link-text">Inicio</span>
-        </a>
-      </li>
-      <li class="navbar-item flexbox-left">
-        <a class="navbar-item-inner flexbox-left">
-          <div class="navbar-item-inner-icon-wrapper flexbox">
-            <span class="material-symbols-outlined">
-              monitoring
-            </span>
-          </div>
-          <span class="link-text">Dashboard</span>
-        </a>
-      </li>
-      <li class="navbar-item flexbox-left">
-        <a class="navbar-item-inner flexbox-left">
-          <div class="navbar-item-inner-icon-wrapper flexbox">
-            <span class="material-symbols-outlined">
-              contact_support
-              </span>
-          </div>
-          <span class="link-text">Soporte</span>
-        </a>
-      </li>
-      <li class="navbar-item flexbox-left">
-        <a class="navbar-item-inner flexbox-left">
-          <div class="navbar-item-inner-icon-wrapper flexbox">
-            <span class="material-symbols-outlined">
-              admin_panel_settings
-              </span>
-          </div>
-          <span class="link-text">Administrador</span>
-        </a>
-      </li>
-      <li class="navbar-item flexbox-left">
-        <a class="navbar-item-inner flexbox-left">
-          <div class="navbar-item-inner-icon-wrapper flexbox">
-            <span class="material-symbols-outlined">
-              person
-              </span>
-          </div>
-          {% if user.is_authenticated %}
-          <span class="link-text">{{user.username}}</span>
-          {% else %}
-          <span class="link-text">Sin Usuario</span>
-          {% endif %}
-        </a>
-      </li>
+  <!-- Custom fonts for this template-->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
 
-      <li class="navbar-item flexbox-left">
-        {% if user.is_authenticated %}
-        <form action="{% url 'logout' %}" method="post" class="logout-form" style="display: contents;">
-            {% csrf_token %}
-            <button type="submit" class="navbar-item-inner-logout flexbox-left">
-                <div class="navbar-item-inner-icon-wrapper flexbox">
-                    <span class="material-symbols-outlined">logout</span>
-                </div>
-                <span class="link-text">Cerrar Sesión</span>  
-            </button>
-        </form>
+
+  <link rel="stylesheet" href="{% static 'css/sb-admin-2.css' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'img/bread.ico' %}">
+
+</head>
+
+
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+  <!-- Sidebar - Brand -->
+
+
+  {% if user.is_authenticated %}
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'home' %}">
+    <div class="sidebar-brand-icon">
+      <i class="fas fa-fw fa-bread-slice"></i>
+    </div>
+    <div class="sidebar-brand-text mx-3">Pancoquito</div>
+  </a>
+  {% endif %}
+  <!-- Divider -->
+  <hr class="sidebar-divider my-0">
+
+  <!-- Nav Item - Dashboard -->
+  <li class="nav-item active">
+    <a class="nav-link" href="{% url 'home' %}">
+      <i class="fas fa-fw fa-tachometer-alt"></i>
+      <span>Dashboard</span></a>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+    Gestión
+  </div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
+      aria-controls="collapseTwo">
+      <i class="fas fa-fw fa-receipt"></i>
+      <span>Ordenes</span>
+    </a>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Selecciona:</h6>
+        <a class="collapse-item" href="{% url 'crear_orden' %}">Crear Orden</a>
+        <a class="collapse-item" href="cards.html">Ver Orden</a>
+      </div>
+    </div>
+  </li>
+
+  <!-- Nav Item - Utilities Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true"
+      aria-controls="collapseUtilities">
+      <i class="fas fa-fw fa-bread-slice"></i>
+      <span>Productos</span>
+    </a>
+    <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Selecciona:</h6>
+        <a class="collapse-item" href="utilities-color.html">Ver Productos</a>
+        {% if user.groups.all.0.name == "Admin" or user.is_superuser %}
+        <a class="collapse-item" href="utilities-border.html">Activación de Productos</a>
+        <a class="collapse-item" href="utilities-other.html">Imágenes</a>
         {% endif %}
-    </li>
-    </ul>
-  </nav>
+        <a class="collapse-item" href="utilities-animation.html">Detalles</a>
+      </div>
+    </div>
+  </li>
+
+  <!-- Divider -->
+  <hr class="sidebar-divider">
+
+  <!-- Heading -->
+  <div class="sidebar-heading">
+    Admin
+  </div>
+
+  {% if user.is_superuser %}
+  <li class="nav-item">
+    <a class="nav-link" href="charts.html">
+      <i class="fas fa-fw fa-chart-area"></i>
+      <span>Charts</span></a>
+  </li>
+  {% endif %}
+
+  <!-- Nav Item - Tables -->
+  {% if user.is_authenticated %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'client_view' %}">
+      <i class="fas fa-fw fa-people-arrows"></i>
+      <span>Clientes</span>
+    </a>
+  </li>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+  <li class="nav-item">
+    <a class="nav-link" href="{% url 'products_view' %}">
+      <i class="fas fa-fw fa-warehouse"></i>
+      <span>Productos</span>
+    </a>
+  </li>
+  {% endif %}
+
+  <!-- Divider -->
+  <hr class="sidebar-divider d-none d-md-block">
+
+  <!-- Sidebar Toggler (Sidebar) -->
+  <div class="text-center d-none d-md-inline">
+    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+  </div>
+
+</ul>

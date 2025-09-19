@@ -3,9 +3,10 @@ from pathlib import Path
 
 # Carga del .env
 from dotenv import load_dotenv
+import dj_database_url
 load_dotenv()  # lee .env desde la raíz del proyecto
 
-import dj_database_url
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,7 +45,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # tus apps:
+    "rest_framework",
+    "rest_framework.authtoken",
+
     "pedidos",
 ]
 
@@ -128,4 +131,17 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": "INFO"},
+}
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'  
+LOGOUT_REDIRECT_URL = '/login/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }

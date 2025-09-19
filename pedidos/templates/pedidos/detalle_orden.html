@@ -1,103 +1,235 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Orden #{{ orden.orden_id }}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'css/sb-admin-2.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'img/bread.ico' %}">
+    <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css'%}" rel="stylesheet">
+
 </head>
-<body>
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="text-center mb-4">Detalle de Orden #{{ orden.orden_id }}</h1>
-                
-                <!-- Información del cliente -->
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Información del Cliente</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Nombre:</strong> {{ orden.cliente.nombre }}</p>
-                        <p><strong>Email:</strong> {{ orden.cliente.email }}</p>
-                        <p><strong>Teléfono:</strong> {{ orden.cliente.telefono }}</p>
-                    </div>
-                </div>
 
-                <!-- Detalles de entrega -->
-                <div class="card mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Detalles de Entrega</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Fecha de entrega:</strong> {{ orden.fecha_entrega }}</p>
-                        <p><strong>Horario de entrega:</strong> {{ orden.get_horario_entrega_display }}</p>
-                        <p><strong>Fecha de orden:</strong> {{ orden.fecha_orden }}</p>
-                    </div>
-                </div>
+<body id="page-top">
 
-                <!-- Productos del pedido -->
-                <div class="card mb-4">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Productos del Pedido</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Producto</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Unitario</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for detalle in orden.detalles.all %}
-                                    <tr>
-                                        <td>{{ detalle.producto.producto_nombre }}</td>
-                                        <td>{{ detalle.cantidad }}</td>
-                                        <td>${{ detalle.precio_unitario }}</td>
-                                        <td>${{ detalle.subtotal }}</td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr>
-                                        <td colspan="4" class="text-center">No hay productos en este pedido</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                                <tfoot>
-                                    <tr class="table-primary">
-                                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                        <td><strong>${{ orden.total }}</strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        {% include './navbar.html' %}
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            {% if user.is_authenticated %}
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{user.first_name}}
+                                    {{user.last_name}}</span>
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+
+                            </a>
+                            {% endif %}
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Settings
+                                </a>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Activity Log
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                {% if user.is_authenticated %}
+                                <form action="{% url 'logout' %}" method="post" style="display: contents;">
+                                    {% csrf_token %}
+                                    <button type="submit" style="background-color: transparent; border: none;">
+                                        <a class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Logout
+                                        </a>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="text-center mb-4">Detalle de Orden #{{ orden.orden_id }}</h1>
+
+                            <!-- Información del cliente -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Información del Cliente</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Nombre:</strong> {{ orden.cliente.nombre }}</p>
+                                    <p><strong>Email:</strong> {{ orden.cliente.email }}</p>
+                                    <p><strong>Teléfono:</strong> {{ orden.cliente.telefono }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Detalles de entrega -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">Detalles de Entrega</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Fecha de entrega:</strong> {{ orden.fecha_entrega }}</p>
+                                    <p><strong>Horario de entrega:</strong> {{ orden.get_horario_entrega_display }}</p>
+                                    <p><strong>Fecha de orden:</strong> {{ orden.fecha_orden }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Productos del pedido -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">Productos del Pedido</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Producto</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Precio Unitario</th>
+                                                    <th>Subtotal</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for detalle in orden.detalles.all %}
+                                                <tr>
+                                                    <td>{{ detalle.producto.producto_nombre }}</td>
+                                                    <td>{{ detalle.cantidad }}</td>
+                                                    <td>${{ detalle.precio_unitario }}</td>
+                                                    <td>${{ detalle.subtotal }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No hay productos en este pedido
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="table-primary">
+                                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                                    <td><strong>${{ orden.total }}</strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Estado del envío -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-dark">
+                                    <h5 class="mb-0">Estado del Envío</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Estado:</strong> {{ orden.envio.estado }}</p>
+                                    <p><strong>Tipo de envío:</strong> {{ orden.envio.tipo }}</p>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <a href="{% url 'crear_orden' %}" class="btn btn-primary">Hacer otro pedido</a>
+                                <button onclick="window.print()" class="btn btn-secondary">Imprimir</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- /.container-fluid -->
 
-                <!-- Estado del envío -->
-                <div class="card mb-4">
-                    <div class="card-header bg-warning text-dark">
-                        <h5 class="mb-0">Estado del Envío</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Estado:</strong> {{ orden.envio.estado }}</p>
-                        <p><strong>Tipo de envío:</strong> {{ orden.envio.tipo }}</p>
-                    </div>
-                </div>
-
-                <div class="text-center">
-                    <a href="{% url 'crear_orden' %}" class="btn btn-primary">Hacer otro pedido</a>
-                    <button onclick="window.print()" class="btn btn-secondary">Imprimir</button>
-                </div>
             </div>
-        </div>
-    </div>
+            <!-- End of Main Content -->
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Santiago Reyes - PanCoquito 2025</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+    <!-- Core plu{% static 'gin JavaScript-->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+    <!-- Custom s{% static 'cripts for all pages-->
+    <script src="{% static 'js/sb-admin-2.min.js'%}"></script>
+    <!-- Page lev{% static 'el plugins -->
+    <script src="{% static 'vendor/chart.js/Chart.min.js'%}"></script>
+    <!-- Page lev{% static 'el custom scripts -->
+    <script src="{% static 'js/demo/chart-area-demo.js'%}"></script>
+    <script src="{% static 'js/demo/chart-pie-demo.js'%}"></script>
+
 </body>
+
 </html>
