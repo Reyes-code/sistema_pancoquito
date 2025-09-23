@@ -51,7 +51,6 @@ class StatsView(APIView):
                 fecha_orden__date__gte=inicio_mes
             ).count()
 
-            # 3. Series diarias (últimos 30 días)
             fecha_limite = hoy - timedelta(days=30)
             ordenes_diarias = (Pedido.objects
                 .filter(fecha_orden__date__gte=fecha_limite)
@@ -68,8 +67,9 @@ class StatsView(APIView):
                 for item in ordenes_diarias
             ]
 
-            return Response({
+            data = Response({
                 'ordenes_recientes': ordenes_recientes,
                 'ordenes_mensual': ordenes_mensual,
                 'series_diarias': datos_diarios
             })
+            return data 

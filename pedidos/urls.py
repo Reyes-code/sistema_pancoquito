@@ -19,6 +19,7 @@ urlpatterns = [
     path('orden/<int:orden_id>/', views.detalle_orden, name='detalle_orden'),
     path('api/productos/', views.obtener_productos, name='obtener_productos'),
     path('api/login-token/', APIView.LoginView.as_view(), name='api_login_token'),
-    path('api/stats/', APIView.StatsView.as_view(), name='main_view_stats')
+    path('api/stats/', APIView.StatsView.as_view(), name='main_view_stats'),
+    path('home/', views.get_stats, name='get_stats'),
 ]
  
