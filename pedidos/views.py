@@ -13,6 +13,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from django.db.models import Q, Count, Max
+from django.db.models.functions import TruncDate
 from django.utils import timezone
 from .forms import ClienteForm, PedidoForm
 from reportlab.pdfgen import canvas
@@ -21,7 +22,8 @@ from reportlab.lib import colors
 from io import BytesIO
 from datetime import datetime, timedelta
 from json_response import JsonResponse, json
-from datetime import datetime
+from .serializers import StatsSerializer
+
 
 
 def login_view(request):
@@ -46,10 +48,74 @@ def logout_view(request):
     response.delete_cookie('csrftoken')
     return response
 
-@never_cache  # Evita que el navegador cachee la respuesta
+def get_stats(request):
+    hoy = timezone.now().date()
+    
+    # 1. Consultas optimizadas
+    fecha_reciente = Pedido.objects.aggregate( ultima_fecha=Max(TruncDate('fecha_orden')))['ultima_fecha']
+    
+    # 2. Órdenes recientes (simplificado)
+    ordenes_recientes = 0
+    if fecha_reciente:
+        fecha_reciente_date = fecha_reciente.date() if hasattr(fecha_reciente, 'date') else fecha_reciente
+        ordenes_recientes = Pedido.objects.filter(fecha_orden__date=fecha_reciente_date).count()
+
+    # 3. Mejores clientes (directo a lista)
+    mejores_clientes_data = list(Pedido.objects
+        .values('cliente_id', 'cliente__nombre')
+        .annotate(total=Count('orden_id'))
+        .order_by('-total')[:10]
+    )
+    # 4. Otras métricas
+    ordenes_hoy = Pedido.objects.filter(fecha_orden__date=hoy).count()
+    
+    inicio_mes = hoy.replace(day=1)
+    ordenes_mensual = Pedido.objects.filter(fecha_orden__date__gte=inicio_mes).count()
+    
+    # 5. Series diarias
+    fecha_limite = hoy - timedelta(days=30)
+    series_diarias_data = [
+        {
+            'fecha': item['fecha_orden__date'].strftime("%Y-%m-%d"), 
+            'total': item['total']
+        }
+        for item in Pedido.objects
+            .filter(fecha_orden__date__gte=fecha_limite)
+            .values('fecha_orden__date')
+            .annotate(total=Count('orden_id'))
+            .order_by('fecha_orden__date')
+    ]
+    
+    # 6. Datos para el serializer
+    raw_data = {
+        'ordenes_hoy': ordenes_hoy,
+        'ordenes_recientes': ordenes_recientes,
+        'ordenes_mensual': ordenes_mensual,
+        'fecha_reciente': fecha_reciente,
+        'mejores_clientes': mejores_clientes_data,
+        'series_diarias': series_diarias_data,
+        'mejoresclientes_json': json.dumps(mejores_clientes_data) 
+    }
+    
+    # 7. Serializar (¡esto es lo importante!)
+    serializer = StatsSerializer(data=raw_data)
+    serializer.is_valid(raise_exception=True)
+    
+    return serializer.data
+
+@never_cache
 @login_required
 def home(request):
-    return render(request, 'pedidos/index.html')
+    stats_data = get_stats(request)
+    
+    # Contexto listo para el template
+    context = {
+        **stats_data,
+        'mejoresclientes_json': json.dumps(stats_data['mejores_clientes']),
+        'series_diarias_json': json.dumps(stats_data['series_diarias'])
+    }
+    
+    return render(request, 'pedidos/index.html', context)
 
 @login_required
 def client_view(request):
@@ -343,38 +409,6 @@ def obtener_productos(request):
         'activo'
     )
     return JsonResponse(list(productos), safe=False)
-
-def get_stats(request):
-    hoy = timezone.now().date()
-    fecha_reciente = Pedido.objects.aggregate(ultima_fecha=Max('fecha_orden'))['ultima_fecha']
-    ordenes_recientes = Pedido.objects.filter(
-        fecha_orden__date=fecha_reciente
-    ).count() if fecha_reciente else 0
-    # 2. Total mensual (mes actual)
-    inicio_mes = hoy.replace(day=1)
-    ordenes_mensual = Pedido.objects.filter(
-        fecha_orden__date__gte=inicio_mes
-    ).count()
-    # 3. Series diarias (últimos 30 días)
-    fecha_limite = hoy - timedelta(days=30)
-    ordenes_diarias = (Pedido.objects
-        .filter(fecha_orden__date__gte=fecha_limite)
-        .values('fecha_orden__date')
-        .annotate(total=Count('orden_id'))
-        .order_by('fecha_orden__date')
-    )
-    datos_diarios = [
-        {
-            'fecha': item['fecha_orden__date'].strftime("%Y-%m-%d"),
-            'total': item['total']
-        }
-        for item in ordenes_diarias
-    ]
-    return JsonResponse({
-        'ordenes_recientes': ordenes_recientes,
-        'ordenes_mensual': ordenes_mensual,
-        'series_diarias': datos_diarios
-    })
 
 
 @login_required
