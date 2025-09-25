@@ -94,7 +94,7 @@ def get_stats(request):
         'fecha_reciente': fecha_reciente,
         'mejores_clientes': mejores_clientes_data,
         'series_diarias': series_diarias_data,
-        'mejoresclientes_json': json.dumps(mejores_clientes_data) 
+
     }
     
     # 7. Serializar (¡esto es lo importante!)
