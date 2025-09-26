@@ -14,6 +14,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('', RedirectView.as_view(url='/login/', permanent=True)),
     path('editar-cliente/<int:cliente_id>/', views.editar_cliente, name='editar_cliente'),
+    path('editar-producto/<int:producto_id>/', views.editar_producto, name='editar_producto'),
     path('clientes/<int:cliente_id>/pdf/', views.exportar_cliente_pdf, name='exportar_cliente_pdf'),
     path('crear-orden/', views.crear_orden, name='crear_orden'),
     path('orden/<int:orden_id>/', views.detalle_orden, name='detalle_orden'),

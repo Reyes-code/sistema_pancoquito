@@ -11,11 +11,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache   
 from django.views.decorators.http import require_POST
-from django.core.paginator import Paginator
+from django.core.paginator import  Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Count, Max
 from django.db.models.functions import TruncDate
 from django.utils import timezone
-from .forms import ClienteForm, PedidoForm
+from .forms import ClienteForm, PedidoForm, ProductoForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -171,7 +171,17 @@ def editar_cliente(request, cliente_id):
         form = ClienteForm(instance=cliente)
     return render(request, 'pedidos/editar_cliente.html', {'form': form})
 
-
+@login_required
+def editar_producto(request, producto_id):
+    producto = get_object_or_404(Productos, pk=producto_id)
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, instance=producto)
+        if form.is_valid():
+            form.save()
+            return redirect('client_view')  # Redirige a la página de inicio después de editar
+    else:
+        form = ProductoForm(instance=producto)
+    return render(request, 'pedidos/editar_producto.html', {'form': form})
 
 
 @login_required
@@ -297,49 +307,67 @@ def categories_view(request):
     }
     return render(request, 'pedidos/categories_view.html', context)
 
+
+
 @login_required
 def products_view(request):
+    # Obtener parámetros de filtrado
     filtros = {
-        'producto_id': request.GET.get('Producto_ID', ''), 
-        'producto_nombre': request.GET.get('Producto_nombre', ''),
+        'producto_id': request.GET.get('producto_id', ''),
+        'producto_nombre': request.GET.get('producto_nombre', ''),
         'precio': request.GET.get('precio', ''),
         'activo': request.GET.get('activo', ''),
-        'categoria_id': request.GET.get('Categoria_ID', ''),
+        'categoria_id': request.GET.get('categoria_id', ''),
         'unidad': request.GET.get('unidad', '')
     }
     
-    productos = Productos.objects.all().select_related('categoria').order_by('producto_id')
+    # OPTIMIZACIÓN: Seleccionar solo los campos necesarios y prefetch related
+    productos = Productos.objects.all().select_related('categoria').only(
+        'producto_id', 
+        'producto_nombre', 
+        'precio', 
+        'activo', 
+        'unidad',
+        'categoria__categoria_nombre'  # Solo el nombre de la categoría
+    ).order_by('producto_id')
     
-    if any(filtros.values()):
-        query = Q()
-        
-        if filtros['producto_id']:
-            query &= Q(producto_id__icontains=filtros['producto_id'])
-        if filtros['producto_nombre']:
-            query &= Q(producto_nombre__icontains=filtros['producto_nombre'])
-        if filtros['precio']:
-            query &= Q(precio__icontains=filtros['precio'])
-        if filtros['activo']:
-            # Convertir string a booleano
-            activo_value = filtros['activo'].lower() in ['true', '1', 'yes']
-            query &= Q(activo=activo_value)
-        if filtros['categoria_id']:
-            query &= Q(categoria__categoria_id__icontains=filtros['categoria_id'])
-        if filtros['unidad']:
-            query &= Q(unidad__icontains=filtros['unidad'])
-        
-        productos = productos.filter(query)
+    # Aplicar filtros de manera más eficiente
+    if filtros['producto_id']:
+        productos = productos.filter(producto_id__icontains=filtros['producto_id'])
+    if filtros['producto_nombre']:
+        productos = productos.filter(producto_nombre__icontains=filtros['producto_nombre'])
+    if filtros['precio']:
+        try:
+            # Para búsqueda exacta de precio
+            productos = productos.filter(precio=filtros['precio'])
+        except ValueError:
+            # Si no es número, buscar como texto
+            productos = productos.filter(precio__icontains=filtros['precio'])
+    if filtros['activo']:
+        activo_value = filtros['activo'].lower() in ['true', '1', 'yes', 'activo']
+        productos = productos.filter(activo=activo_value)
+    if filtros['categoria_id']:
+        productos = productos.filter(categoria__categoria_id__icontains=filtros['categoria_id'])
+    if filtros['unidad']:
+        productos = productos.filter(unidad__icontains=filtros['unidad'])
     
-    paginator = Paginator(productos, 20)
+    # OPTIMIZACIÓN: Paginación más eficiente
+    paginator = Paginator(productos, 20)  # Mostrar 20 items por página
+    
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
     
     context = {
         'page_obj': page_obj,
         'filtros': filtros,
     }
+    
     return render(request, 'pedidos/products_view.html', context)
-
 
 
 @login_required

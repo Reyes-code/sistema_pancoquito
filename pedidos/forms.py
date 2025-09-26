@@ -15,6 +15,12 @@ class ClienteForm(forms.ModelForm):
 
 
     
+class ProductoForm(forms.ModelForm):
+    class  Meta:
+         model = Productos
+         fields = ['producto_nombre','precio','activo']   
+    
+    
 class PedidoForm(forms.Form):
     fecha_entrega = forms.DateField(
         widget=forms.DateInput(attrs={
