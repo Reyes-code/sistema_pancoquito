@@ -440,6 +440,66 @@ def obtener_productos(request):
 
 
 @login_required
+def orders_view(request):
+    # Obtener parámetros de filtrado
+    filtros = {
+        'orden_id': request.GET.get('orden_id', ''),
+        'cliente': request.GET.get('cliente', ''),
+        'fecha_entrega': request.GET.get('fecha_entrega', ''),
+        'horario_entrega': request.GET.get('horario_entrega', ''),
+    }
+    
+    # OPTIMIZACIÓN: Incluir prefetch_related para los detalles y productos
+    orders = Pedido.objects.all().select_related('cliente').prefetch_related(
+        'detalles__producto'
+    ).only(
+        'orden_id',
+        'cliente__nombre',
+        'fecha_entrega',  
+        'horario_entrega',
+        'fecha_orden'
+    ).order_by('orden_id')
+
+    if filtros['orden_id']:
+        orders = orders.filter(orden_id__icontains=filtros['orden_id'])
+    
+    if filtros['cliente']:
+        orders = orders.filter(cliente__nombre__icontains=filtros['cliente'])
+    
+    if filtros['fecha_entrega']:
+        orders = orders.filter(fecha_entrega=filtros['fecha_entrega'])
+    
+    if filtros['horario_entrega']:
+        orders = orders.filter(horario_entrega__icontains=filtros['horario_entrega'])
+        
+    orders_with_totals = []
+    for order in orders:
+        total = sum(
+            detalle.cantidad * detalle.precio_unitario 
+            for detalle in order.detalles.all()
+        )
+        orders_with_totals.append({
+            'orden': order,
+            'total_calculado': total
+        })
+
+    paginator = Paginator(orders_with_totals, 20)  
+    
+    page_number = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_obj': page_obj,
+        'filtros': filtros,
+    }
+    
+    return render(request, 'pedidos/orders_view.html', context)
+@login_required
 def main_view_stats(request):
     today = timezone.now()
     return today
