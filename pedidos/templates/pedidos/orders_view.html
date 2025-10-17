@@ -62,10 +62,8 @@
                                     <div class="col-md-2 mb-2">
                                         <select class="form-control" name="horario_entrega">
                                             <option value="">Todos los horarios</option>
-                                            <option value="mañana" {% if filtros.horario_entrega=="mañana" %}selected{%
-                                                endif %}>Mañana</option>
-                                            <option value="tarde" {% if filtros.horario_entrega=="tarde" %}selected{%
-                                                endif %}>Tarde</option>
+                                            <option value="mañana" {% if filtros.horario_entrega == "mañana" %}selected{% endif %}>Mañana</option>
+                                            <option value="tarde" {% if filtros.horario_entrega == "tarde" %}selected{% endif %}>Tarde</option>
                                         </select>
                                     </div>
                                     <div class="col-md-1 mb-2">
@@ -92,7 +90,7 @@
                                             <th>Ruta</th>
                                             <th>Fecha Creación</th>
                                             <th>Total</th>
-                                            <th>Productos</th>
+                                            <th>Detalle</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -107,8 +105,8 @@
                                             <td class="font-weight-bold">${{ total }}</td>
                                             <td class="text-left">
                                                 <a href="{% url 'detalle_orden' orden.orden_id %}"
-                                                    class="btn btn-sm btn-outline-primary" title="Editar cliente">
-                                                    <i class="far fa-edit"></i>
+                                                    class="btn btn-sm btn-outline-primary" title="Ver detalle de la orden">
+                                                    <i class="fas fa-receipt"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -212,7 +210,7 @@
                     "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
                 }
             });
-        });
+        })
     </script>
     {% endif %}
 </body>
