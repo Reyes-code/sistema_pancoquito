@@ -12,7 +12,9 @@
     <title>Pedidos</title>
 
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/sb-admin-2.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'img/bread.ico' %}">
     <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
@@ -28,7 +30,7 @@
             <!-- Main Content -->
             <div id="content">
                 {% include './topbar.html' %}
-                
+
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
@@ -46,12 +48,12 @@
                             <form method="get" class="mb-4">
                                 <div class="row">
                                     <div class="col-md-2 mb-2">
-                                        <input type="text" class="form-control" name="orden_id"
-                                            placeholder="ID Pedido" value="{{ filtros.orden_id }}">
+                                        <input type="text" class="form-control" name="orden_id" placeholder="ID Pedido"
+                                            value="{{ filtros.orden_id }}">
                                     </div>
                                     <div class="col-md-3 mb-2">
-                                        <input type="text" class="form-control" name="cliente"
-                                            placeholder="Cliente" value="{{ filtros.cliente }}">
+                                        <input type="text" class="form-control" name="cliente" placeholder="Cliente"
+                                            value="{{ filtros.cliente }}">
                                     </div>
                                     <div class="col-md-2 mb-2">
                                         <input type="date" class="form-control" name="fecha_entrega"
@@ -60,8 +62,10 @@
                                     <div class="col-md-2 mb-2">
                                         <select class="form-control" name="horario_entrega">
                                             <option value="">Todos los horarios</option>
-                                            <option value="mañana" {% if filtros.horario_entrega == 'mañana' %}selected{% endif %}>Mañana</option>
-                                            <option value="tarde" {% if filtros.horario_entrega == 'tarde' %}selected{% endif %}>Tarde</option>
+                                            <option value="mañana" {% if filtros.horario_entrega=="mañana" %}selected{%
+                                                endif %}>Mañana</option>
+                                            <option value="tarde" {% if filtros.horario_entrega=="tarde" %}selected{%
+                                                endif %}>Tarde</option>
                                         </select>
                                     </div>
                                     <div class="col-md-1 mb-2">
@@ -78,12 +82,14 @@
                             </form>
 
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover" id="tablaPedidos" width="100%" cellspacing="0">
+                                <table class="table table-bordered table-hover" id="tablaPedidos" width="100%"
+                                    cellspacing="0">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>ID Pedido</th>
                                             <th>Cliente</th>
                                             <th>Fecha Entrega</th>
+                                            <th>Ruta</th>
                                             <th>Fecha Creación</th>
                                             <th>Total</th>
                                             <th>Productos</th>
@@ -96,19 +102,14 @@
                                             <td>{{ orden.orden_id }}</td>
                                             <td>{{ orden.cliente.nombre }}</td>
                                             <td>{{ orden.fecha_entrega }}</td>
+                                            <td>{{ orden.horario_entrega }}</td>
                                             <td>{{ orden.fecha_orden|date:"d/m/Y H:i" }}</td>
                                             <td class="font-weight-bold">${{ total }}</td>
                                             <td class="text-left">
-                                                <ul class="list-unstyled mb-0">
-                                                    {% for detalle in orden.detalles.all %}
-                                                    <li class="small">
-                                                        • {{ detalle.producto.producto_nombre }} 
-                                                        (x{{ detalle.cantidad }})
-                                                    </li>
-                                                    {% empty %}
-                                                    <li class="small text-muted">Sin productos</li>
-                                                    {% endfor %}
-                                                </ul>
+                                                <a href="{% url 'detalle_orden' orden.orden_id %}"
+                                                    class="btn btn-sm btn-outline-primary" title="Editar cliente">
+                                                    <i class="far fa-edit"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                         {% endwith %}
@@ -215,4 +216,5 @@
     </script>
     {% endif %}
 </body>
+
 </html>

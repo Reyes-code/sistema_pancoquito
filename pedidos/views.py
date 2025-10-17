@@ -460,18 +460,7 @@ def orders_view(request):
         'fecha_orden'
     ).order_by('orden_id')
 
-    if filtros['orden_id']:
-        orders = orders.filter(orden_id__icontains=filtros['orden_id'])
     
-    if filtros['cliente']:
-        orders = orders.filter(cliente__nombre__icontains=filtros['cliente'])
-    
-    if filtros['fecha_entrega']:
-        orders = orders.filter(fecha_entrega=filtros['fecha_entrega'])
-    
-    if filtros['horario_entrega']:
-        orders = orders.filter(horario_entrega__icontains=filtros['horario_entrega'])
-        
     orders_with_totals = []
     for order in orders:
         total = sum(
