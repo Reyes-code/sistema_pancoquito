@@ -321,7 +321,7 @@ def products_view(request):
         'unidad': request.GET.get('unidad', '')
     }
     
-    # OPTIMIZACIÓN: Seleccionar solo los campos necesarios y prefetch related
+    
     productos = Productos.objects.all().select_related('categoria').only(
         'producto_id', 
         'producto_nombre', 
@@ -449,7 +449,6 @@ def orders_view(request):
         'horario_entrega': request.GET.get('horario_entrega', ''),
     }
     
-    # OPTIMIZACIÓN: Incluir prefetch_related para los detalles y productos
     orders = Pedido.objects.all().select_related('cliente').prefetch_related(
         'detalles__producto'
     ).only(
@@ -459,6 +458,15 @@ def orders_view(request):
         'horario_entrega',
         'fecha_orden'
     ).order_by('orden_id')
+    
+    if filtros['orden_id']:
+        orders = orders.filter(orden_id__icontains=filtros['orden_id'])
+    if filtros['cliente']:
+        orders = orders.filter(cliente__nombre__icontains=filtros['cliente'])
+    if filtros['fecha_entrega']:
+        orders = orders.filter(fecha_entrega=filtros['fecha_entrega'])
+    if filtros['horario_entrega']:
+        orders = orders.filter(horario_entrega=filtros['horario_entrega'])
 
     
     orders_with_totals = []
@@ -488,9 +496,4 @@ def orders_view(request):
     }
     
     return render(request, 'pedidos/orders_view.html', context)
-@login_required
-def main_view_stats(request):
-    today = timezone.now()
-    return today
-
 
