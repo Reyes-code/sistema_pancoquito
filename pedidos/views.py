@@ -178,7 +178,7 @@ def editar_producto(request, producto_id):
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
-            return redirect('client_view')  # Redirige a la página de inicio después de editar
+            return redirect('product_view')  # Redirige a la página de inicio después de editar
     else:
         form = ProductoForm(instance=producto)
     return render(request, 'pedidos/editar_producto.html', {'form': form})
