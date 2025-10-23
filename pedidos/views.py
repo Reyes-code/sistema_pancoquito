@@ -54,28 +54,25 @@ def logout_view(request):
 def get_stats(request):
     hoy = timezone.now().date()
     
-    # 1. Consultas optimizadas
+    
     fecha_reciente = Pedido.objects.aggregate( ultima_fecha=Max(TruncDate('fecha_orden')))['ultima_fecha']
     
-    # 2. Órdenes recientes (simplificado)
+    
     ordenes_recientes = 0
     if fecha_reciente:
         fecha_reciente_date = fecha_reciente.date() if hasattr(fecha_reciente, 'date') else fecha_reciente
         ordenes_recientes = Pedido.objects.filter(fecha_orden__date=fecha_reciente_date).count()
 
-    # 3. Mejores clientes (directo a lista)
     mejores_clientes_data = list(Pedido.objects
         .values('cliente_id', 'cliente__nombre')
         .annotate(total=Count('id'))
         .order_by('-total')[:10]
     )
-    # 4. Otras métricas
     ordenes_hoy = Pedido.objects.filter(fecha_orden__date=hoy).count()
     
     inicio_mes = hoy.replace(day=1)
     ordenes_mensual = Pedido.objects.filter(fecha_orden__date__gte=inicio_mes).count()
     
-    # 5. Series diarias
     fecha_limite = hoy - timedelta(days=30)
     series_diarias_data = [
         {
@@ -100,7 +97,7 @@ def get_stats(request):
 
     }
     
-    # 7. Serializar (¡esto es lo importante!)
+
     serializer = StatsSerializer(data=raw_data)
     serializer.is_valid(raise_exception=True)
     
@@ -111,7 +108,6 @@ def get_stats(request):
 def home(request):
     stats_data = get_stats(request)
     
-    # Contexto listo para el template
     context = {
         **stats_data,
         'mejoresclientes_json': json.dumps(stats_data['mejores_clientes']),
@@ -145,7 +141,7 @@ def client_view(request):
         if filtros['cedula']:
             queries.append(Q(cedula__icontains=filtros['cedula']))
 
-        # Combinar filtros con OR (opcionalmente puede ser AND)
+
         query = queries.pop()
         for q in queries:
             query |= q
@@ -169,7 +165,7 @@ def editar_cliente(request, cliente_id):
         form = ClienteForm(request.POST, instance=cliente)
         if form.is_valid():
             form.save()
-            return redirect('client_view')  # Redirige a la página de inicio después de editar
+            return redirect('client_view')  
     else:
         form = ClienteForm(instance=cliente)
     return render(request, 'pedidos/editar_cliente.html', {'form': form})
@@ -181,7 +177,7 @@ def editar_producto(request, producto_id):
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
-            return redirect('products_view')  # Redirige a la página de inicio después de editar
+            return redirect('products_view')  
     else:
         form = ProductoForm(instance=producto)
     return render(request, 'pedidos/editar_producto.html', {'form': form})
@@ -189,10 +185,10 @@ def editar_producto(request, producto_id):
 
 @login_required
 def exportar_cliente_pdf(request, cliente_id):
-    # Obtener el cliente
+
     cliente = Cliente.objects.get(cliente_id=cliente_id)
     
-    # Crear un buffer para el PDF
+
     buffer = BytesIO()
     
     # Crear el PDF
@@ -233,17 +229,16 @@ def exportar_cliente_pdf(request, cliente_id):
 
 @login_required
 def categories_view(request):
-    # Obtener parámetros de filtrado del request
+
     filtros = {
         'categoria_id': request.GET.get('categoria_id', ''),
         'categoria_nombre': request.GET.get('categoria_nombre', ''),
         'categoria_tipo': request.GET.get('categoria_tipo', ''),
     }
 
-    # Consulta inicial
     categorias = Categoria.objects.all().order_by('categoria_id')
 
-    # Aplicar filtros si existen
+    
     if any(filtros.values()):
         queries = []
         if filtros['categoria_id']:
@@ -253,7 +248,6 @@ def categories_view(request):
         if filtros['categoria_tipo']:
             queries.append(Q(email__icontains=filtros['categoria_tipo']))
 
-                # Combinar filtros con OR (opcionalmente puede ser AND)
         query = queries.pop()
         for q in queries:
             query |= q
@@ -266,45 +260,7 @@ def categories_view(request):
 
     context = {
         'page_obj': page_obj,
-        'filtros': filtros,  # Para mantener los valores en los inputs
-    }
-    return render(request, 'pedidos/categories_view.html', context)
-
-
-@login_required
-def categories_view(request):
-    # Obtener parámetros de filtrado del request
-    filtros = {
-        'Categoria_ID': request.GET.get('categoria_id', ''),
-        'categoria_nombre': request.GET.get('categoria_nombre', ''),
-        'categoria_tipo': request.GET.get('categoria_tipo', ''),
-    }
-
-
-    categorias = Categoria.objects.all().order_by('categoria_id')
-
-    if any(filtros.values()):
-        queries = []
-        if filtros['categoria_id']:
-            queries.append(Q(id__icontains=filtros['categoria_id']))
-        if filtros['categoria_nombre']:
-            queries.append(Q(nombre__icontains=filtros['categoria_nombre']))
-        if filtros['categoria_tipo']:
-            queries.append(Q(email__icontains=filtros['categoria_tipo']))
-
-        query = queries.pop()
-        for q in queries:
-            query |= q
-        categorias = categorias.filter(query)
-
-    # Paginación
-    paginator = Paginator(categorias, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'page_obj': page_obj,
-        'filtros': filtros,  # Para mantener los valores en los inputs
+        'filtros': filtros,  
     }
     return render(request, 'pedidos/categories_view.html', context)
 
@@ -322,27 +278,36 @@ def products_view(request):
         'unidad': request.GET.get('unidad', '')
     }
     
+    if request.user.is_superuser or request.user.groups.filter(name='Admin').exists():
+        productos = Productos.objects.all().select_related('categoria').only(
+            'producto_id', 
+            'producto_nombre', 
+            'precio', 
+            'activo', 
+            'unidad',
+            'categoria__categoria_nombre'  
+        ).order_by('producto_id')
     
-    productos = Productos.objects.all().select_related('categoria').only(
-        'producto_id', 
-        'producto_nombre', 
-        'precio', 
-        'activo', 
-        'unidad',
-        'categoria__categoria_nombre'  # Solo el nombre de la categoría
-    ).order_by('producto_id')
-    
-    # Aplicar filtros de manera más eficiente
+    else: 
+        productos = Productos.objects.all().select_related('categoria').only(
+            'producto_id', 
+            'producto_nombre', 
+            'precio', 
+            'activo', 
+            'unidad',
+            'categoria__categoria_nombre'  
+        ).filter(activo=True).order_by('producto_id')
+         
+
+
     if filtros['producto_id']:
         productos = productos.filter(producto_id__icontains=filtros['producto_id'])
     if filtros['producto_nombre']:
         productos = productos.filter(producto_nombre__icontains=filtros['producto_nombre'])
     if filtros['precio']:
         try:
-            # Para búsqueda exacta de precio
             productos = productos.filter(precio=filtros['precio'])
         except ValueError:
-            # Si no es número, buscar como texto
             productos = productos.filter(precio__icontains=filtros['precio'])
     if filtros['activo']:
         activo_value = filtros['activo'].lower() in ['true', '1', 'yes', 'activo']
