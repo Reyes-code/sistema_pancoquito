@@ -51,7 +51,7 @@ class Pedido(models.Model):
         ('tarde', 'Tarde'),
     ]
     
-    orden_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fecha_entrega = models.DateField()
     horario_entrega = models.CharField(max_length=10, choices=HORARIO_CHOICES)

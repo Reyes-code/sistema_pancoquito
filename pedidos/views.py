@@ -63,7 +63,7 @@ def get_stats(request):
     # 3. Mejores clientes (directo a lista)
     mejores_clientes_data = list(Pedido.objects
         .values('cliente_id', 'cliente__nombre')
-        .annotate(total=Count('orden_id'))
+        .annotate(total=Count('id'))
         .order_by('-total')[:10]
     )
     # 4. Otras métricas
@@ -82,7 +82,7 @@ def get_stats(request):
         for item in Pedido.objects
             .filter(fecha_orden__date__gte=fecha_limite)
             .values('fecha_orden__date')
-            .annotate(total=Count('orden_id'))
+            .annotate(total=Count('id'))
             .order_by('fecha_orden__date')
     ]
     
@@ -178,7 +178,7 @@ def editar_producto(request, producto_id):
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
-            return redirect('product_view')  # Redirige a la página de inicio después de editar
+            return redirect('products_view')  # Redirige a la página de inicio después de editar
     else:
         form = ProductoForm(instance=producto)
     return render(request, 'pedidos/editar_producto.html', {'form': form})
@@ -244,7 +244,7 @@ def categories_view(request):
     if any(filtros.values()):
         queries = []
         if filtros['categoria_id']:
-            queries.append(Q(orden_id__icontains=filtros['categoria_id']))
+            queries.append(Q(id__icontains=filtros['categoria_id']))
         if filtros['categoria_nombre']:
             queries.append(Q(nombre__icontains=filtros['categoria_nombre']))
         if filtros['categoria_tipo']:
@@ -284,7 +284,7 @@ def categories_view(request):
     if any(filtros.values()):
         queries = []
         if filtros['categoria_id']:
-            queries.append(Q(orden_id__icontains=filtros['categoria_id']))
+            queries.append(Q(id__icontains=filtros['categoria_id']))
         if filtros['categoria_nombre']:
             queries.append(Q(nombre__icontains=filtros['categoria_nombre']))
         if filtros['categoria_tipo']:
@@ -404,7 +404,7 @@ def crear_orden(request):
                         precio_unitario=producto.precio
                     )
                 
-                return redirect('detalle_orden', orden_id=orden.orden_id)
+                return redirect('detalle_orden', id=orden.id)
             
             except Exception as e:
                 print(f"Error al crear la orden: {str(e)}")
@@ -422,8 +422,8 @@ def crear_orden(request):
     })
 
 @login_required
-def detalle_orden(request, orden_id):
-    orden = Pedido.objects.get(orden_id=orden_id)
+def detalle_orden(request, id):
+    orden = Pedido.objects.get(id=id)
     return render(request, 'pedidos/detalle_orden.html', {
         'orden': orden
     })
@@ -443,7 +443,7 @@ def obtener_productos(request):
 def orders_view(request):
     # Obtener parámetros de filtrado
     filtros = {
-        'orden_id': request.GET.get('orden_id', ''),
+        'id': request.GET.get('id', ''),
         'cliente': request.GET.get('cliente', ''),
         'fecha_entrega': request.GET.get('fecha_entrega', ''),
         'horario_entrega': request.GET.get('horario_entrega', ''),
@@ -452,15 +452,15 @@ def orders_view(request):
     orders = Pedido.objects.all().select_related('cliente').prefetch_related(
         'detalles__producto'
     ).only(
-        'orden_id',
+        'id',
         'cliente__nombre',
         'fecha_entrega',  
         'horario_entrega',
         'fecha_orden'
-    ).order_by('orden_id')
+    ).order_by('id')
     
-    if filtros['orden_id']:
-        orders = orders.filter(orden_id__icontains=filtros['orden_id'])
+    if filtros['id']:
+        orders = orders.filter(id__icontains=filtros['id'])
     if filtros['cliente']:
         orders = orders.filter(cliente__nombre__icontains=filtros['cliente'])
     if filtros['fecha_entrega']:
