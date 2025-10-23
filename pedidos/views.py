@@ -26,6 +26,9 @@ from .serializers import StatsSerializer
 
 
 
+def custom_404(request, exception):
+    return render(request, 'pedidos/404.html', status=404)
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -40,7 +43,7 @@ def login_view(request):
     
     return render(request, 'pedidos/login.html')
 
-@require_POST
+@login_required
 def logout_view(request):
     logout(request)
     response = redirect('login') 
@@ -277,10 +280,9 @@ def categories_view(request):
         'categoria_tipo': request.GET.get('categoria_tipo', ''),
     }
 
-    # Consulta inicial
+
     categorias = Categoria.objects.all().order_by('categoria_id')
 
-    # Aplicar filtros si existen
     if any(filtros.values()):
         queries = []
         if filtros['categoria_id']:
@@ -290,7 +292,6 @@ def categories_view(request):
         if filtros['categoria_tipo']:
             queries.append(Q(email__icontains=filtros['categoria_tipo']))
 
-                # Combinar filtros con OR (opcionalmente puede ser AND)
         query = queries.pop()
         for q in queries:
             query |= q
