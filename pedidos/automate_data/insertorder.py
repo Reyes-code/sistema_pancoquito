@@ -41,7 +41,7 @@ for i in range(100):
     VALUES (%s, %s, %s)
     """
     cursor.execute(query_orden, (fechas_orden[i], cliente_id, envio_id))
-    pedido_id = cursor.lastrowid
+    id = cursor.lastrowid
     
     # Insertar detalles de orden (1-5 productos por orden)
     num_productos = random.randint(1, 5)
@@ -51,10 +51,10 @@ for i in range(100):
         cantidad = random.randint(1, 3)  # Cantidad entre 1 y 3 unidades
         
         query_detalle = """
-        INSERT INTO orden_detalle (pedido_id, Producto_ID, cantidad, precio_unitario)
+        INSERT INTO orden_detalle (id, Producto_ID, cantidad, precio_unitario)
         VALUES (%s, %s, %s, %s)
         """
-        cursor.execute(query_detalle, (pedido_id, producto_id, cantidad, precio))
+        cursor.execute(query_detalle, (id, producto_id, cantidad, precio))
 
 conexion.commit()
 

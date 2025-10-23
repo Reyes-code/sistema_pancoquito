@@ -55,7 +55,7 @@ class StatsView(APIView):
             ordenes_diarias = (Pedido.objects
                 .filter(fecha_orden__date__gte=fecha_limite)
                 .values('fecha_orden__date')
-                .annotate(total=Count('pedido_id'))
+                .annotate(total=Count('id'))
                 .order_by('fecha_orden__date')
             )
 

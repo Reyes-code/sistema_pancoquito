@@ -48,8 +48,8 @@
                             <form method="get" class="mb-4">
                                 <div class="row">
                                     <div class="col-md-2 mb-2">
-                                        <input type="text" class="form-control" name="pedido_id" placeholder="ID Pedido"
-                                            value="{{ filtros.pedido_id }}">
+                                        <input type="text" class="form-control" name="id" placeholder="ID Pedido"
+                                            value="{{ filtros.id }}">
                                     </div>
                                     <div class="col-md-3 mb-2">
                                         <input type="text" class="form-control" name="cliente" placeholder="Cliente"
@@ -97,14 +97,14 @@
                                         {% for item in page_obj %}
                                         {% with orden=item.orden total=item.total_calculado %}
                                         <tr>
-                                            <td>{{ orden.pedido_id }}</td>
+                                            <td>{{ orden.id }}</td>
                                             <td>{{ orden.cliente.nombre }}</td>
                                             <td>{{ orden.fecha_entrega }}</td>
                                             <td>{{ orden.horario_entrega }}</td>
                                             <td>{{ orden.fecha_orden|date:"d/m/Y H:i" }}</td>
                                             <td class="font-weight-bold">${{ total }}</td>
                                             <td class="text-left">
-                                                <a href="{% url 'detalle_orden' orden.pedido_id %}"
+                                                <a href="{% url 'detalle_orden' orden.id %}"
                                                     class="btn btn-sm btn-outline-primary" title="Ver detalle de la orden">
                                                     <i class="fas fa-receipt"></i>
                                                 </a>
