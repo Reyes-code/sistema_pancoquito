@@ -53,54 +53,74 @@ def logout_view(request):
 
 def get_stats(request):
     hoy = timezone.now().date()
-    
-    
-    fecha_reciente = Pedido.objects.aggregate( ultima_fecha=Max(TruncDate('fecha_orden')))['ultima_fecha']
-    
-    
+
+    # --- Rol ---
+    is_admin_or_employee = (
+        request.user.is_superuser
+        or request.user.groups.filter(name__in=['Admin', 'Empleado']).exists()
+    )
+
+    # --- Base queryset con visibilidad por rol ---
+    qs = Pedido.objects.all()
+    if not is_admin_or_employee:
+        qs = qs.filter(cliente__user=request.user)
+
+    # --- Última fecha con órdenes (en el ámbito del qs) ---
+    fecha_reciente = qs.aggregate(ultima_fecha=Max(TruncDate('fecha_orden')))['ultima_fecha']
+
+    # Órdenes en la última fecha encontrada
     ordenes_recientes = 0
     if fecha_reciente:
+        # fecha_reciente ya viene truncada (date) por TruncDate, pero dejamos el guard
         fecha_reciente_date = fecha_reciente.date() if hasattr(fecha_reciente, 'date') else fecha_reciente
-        ordenes_recientes = Pedido.objects.filter(fecha_orden__date=fecha_reciente_date).count()
+        ordenes_recientes = qs.filter(fecha_orden__date=fecha_reciente_date).count()
 
-    mejores_clientes_data = list(Pedido.objects
-        .values('cliente_id', 'cliente__nombre')
-        .annotate(total=Count('id'))
-        .order_by('-total')[:10]
-    )
-    ordenes_hoy = Pedido.objects.filter(fecha_orden__date=hoy).count()
-    
+    # Mejores clientes (condicional por rol)
+    if is_admin_or_employee:
+        mejores_clientes_data = list(
+            qs.values('cliente_id', 'cliente__nombre')
+              .annotate(total=Count('id'))
+              .order_by('-total')[:10]
+        )
+    else:
+        # Solo el propio cliente
+        mejores_clientes_data = list(
+            qs.values('cliente_id', 'cliente__nombre')
+              .annotate(total=Count('id'))
+              .order_by('-total')[:1]
+        )
+
+    # Órdenes hoy / del mes (en el ámbito del qs)
+    ordenes_hoy = qs.filter(fecha_orden__date=hoy).count()
+
     inicio_mes = hoy.replace(day=1)
-    ordenes_mensual = Pedido.objects.filter(fecha_orden__date__gte=inicio_mes).count()
-    
+    ordenes_mensual = qs.filter(fecha_orden__date__gte=inicio_mes).count()
+
+    # Serie diaria últimos 30 días (en el ámbito del qs)
     fecha_limite = hoy - timedelta(days=30)
+    series_qs = (
+        qs.filter(fecha_orden__date__gte=fecha_limite)
+          .values('fecha_orden__date')
+          .annotate(total=Count('id'))
+          .order_by('fecha_orden__date')
+    )
     series_diarias_data = [
-        {
-            'fecha': item['fecha_orden__date'].strftime("%Y-%m-%d"), 
-            'total': item['total']
-        }
-        for item in Pedido.objects
-            .filter(fecha_orden__date__gte=fecha_limite)
-            .values('fecha_orden__date')
-            .annotate(total=Count('id'))
-            .order_by('fecha_orden__date')
+        {'fecha': item['fecha_orden__date'].strftime('%Y-%m-%d'), 'total': item['total']}
+        for item in series_qs
     ]
-    
-    # 6. Datos para el serializer
+
+    # Datos crudos para el serializer
     raw_data = {
         'ordenes_hoy': ordenes_hoy,
         'ordenes_recientes': ordenes_recientes,
         'ordenes_mensual': ordenes_mensual,
-        'fecha_reciente': fecha_reciente,
+        'fecha_reciente': fecha_reciente,       
         'mejores_clientes': mejores_clientes_data,
         'series_diarias': series_diarias_data,
-
     }
-    
 
     serializer = StatsSerializer(data=raw_data)
     serializer.is_valid(raise_exception=True)
-    
     return serializer.data
 
 @never_cache
@@ -317,8 +337,8 @@ def products_view(request):
     if filtros['unidad']:
         productos = productos.filter(unidad__icontains=filtros['unidad'])
     
-    # OPTIMIZACIÓN: Paginación más eficiente
-    paginator = Paginator(productos, 20)  # Mostrar 20 items por página
+
+    paginator = Paginator(productos, 20)  
     
     page_number = request.GET.get('page')
     try:
@@ -415,15 +435,34 @@ def orders_view(request):
         'horario_entrega': request.GET.get('horario_entrega', ''),
     }
     
-    orders = Pedido.objects.all().select_related('cliente').prefetch_related(
+    
+    is_admin_or_employee = (
+        request.user.is_superuser
+        or request.user.groups.filter(name__in=['Admin', 'Empleado']).exists()
+    )
+    
+    if not is_admin_or_employee:
+            orders = Pedido.objects.all().select_related('cliente').prefetch_related(
         'detalles__producto'
-    ).only(
+        ).only(
         'id',
         'cliente__nombre',
         'fecha_entrega',  
         'horario_entrega',
         'fecha_orden'
-    ).order_by('id')
+        ).order_by('-id').filter(cliente__user=request.user)
+    
+    else:
+            orders = Pedido.objects.all().select_related('cliente').prefetch_related(
+        'detalles__producto'
+        ).only(
+        'id',
+        'cliente__nombre',
+        'fecha_entrega',  
+        'horario_entrega',
+        'fecha_orden'
+        ).order_by('-id')
+         
     
     if filtros['id']:
         orders = orders.filter(id__icontains=filtros['id'])
