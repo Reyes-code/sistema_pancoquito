@@ -48,6 +48,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-12">
+
                             <h1 class="text-center mb-4">Detalle de Orden #{{ orden.id }}</h1>
 
                             <!-- Información del cliente -->
@@ -91,7 +92,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+
+
                                                 {% for detalle in orden.detalles.all %}
+
                                                 <tr>
                                                     <td>{{ detalle.producto.producto_nombre }}</td>
                                                     <td>{{ detalle.cantidad }}</td>
@@ -108,7 +112,7 @@
                                             <tfoot>
                                                 <tr class="table-primary">
                                                     <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                                    <td><strong>${{ orden.total }}</strong></td>
+                                                    <td><strong>${{ orden.get_total }}</strong></td>
                                                 </tr>
                                             </tfoot>
                                         </table>

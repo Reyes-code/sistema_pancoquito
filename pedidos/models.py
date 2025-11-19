@@ -60,6 +60,9 @@ class Pedido(models.Model):
     envio = models.ForeignKey(Envio, on_delete=models.CASCADE)  
     def __str__(self):
         return f"Pedido #{self.id} - {self.cliente}"
+    def get_total(self):
+        """Calcula el total sumando todos los subtotales de los detalles"""
+        return sum(detalle.subtotal() for detalle in self.detalles.all())
 
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedido, related_name='detalles', on_delete=models.CASCADE)
