@@ -95,7 +95,7 @@
                                     </thead>
                                     <tbody>
                                         {% for item in page_obj %}
-                                        {% with orden=item.orden total=item.total_calculado %}
+                                        {% with orden=item.orden total=item.total_calculado %} 
                                         <tr>
                                             <td>{{ orden.id }}</td>
                                             <td>{{ orden.cliente.nombre }}</td>
